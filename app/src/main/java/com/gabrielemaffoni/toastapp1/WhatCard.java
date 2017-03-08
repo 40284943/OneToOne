@@ -19,4 +19,13 @@ public class WhatCard extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.what_card,container,false);
         return rootView;
     }
+
+    public static WhatCard newInstance() {
+
+        Bundle args = new Bundle();
+
+        WhatCard fragment = new WhatCard();
+        fragment.setArguments(args);
+        return fragment;
+    }
 }
