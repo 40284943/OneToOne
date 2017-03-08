@@ -1,17 +1,16 @@
-package com.gabrielemaffoni.toastapp1;
+package com.gabrielemaffoni.toastapp;
 
 import android.content.Intent;
-import android.icu.util.GregorianCalendar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
-import com.gabrielemaffoni.toastaapp1.R;
-import com.gabrielemaffoni.toastapp1.classes.Friend;
-import com.gabrielemaffoni.toastapp1.classes.FriendsAdapter;
+
+import com.gabrielemaffoni.toastapp.classes.Friend;
+import com.gabrielemaffoni.toastapp.classes.FriendsAdapter;
 
 import java.util.ArrayList;
 

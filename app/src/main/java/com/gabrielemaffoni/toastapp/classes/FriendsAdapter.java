@@ -1,4 +1,4 @@
-package com.gabrielemaffoni.toastapp1.classes;
+package com.gabrielemaffoni.toastapp.classes;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.gabrielemaffoni.toastaapp1.R;
+import com.gabrielemaffoni.toastapp.R;
 
 import java.util.ArrayList;
 

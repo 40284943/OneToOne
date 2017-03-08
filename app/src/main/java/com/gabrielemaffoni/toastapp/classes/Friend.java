@@ -1,4 +1,4 @@
-package com.gabrielemaffoni.toastapp1.classes;
+package com.gabrielemaffoni.toastapp.classes;
 
 import java.util.ArrayList;
 
