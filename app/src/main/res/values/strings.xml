@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">One To One</string>
+
+    <string name="name">Name</string>
+    <string name="surname">Surname</string>
+    <string name="profile_pic_description">User profile pic</string>
+    <string name="profile_pic_description_chosen">User chosen profile pic</string>
+</resources>
