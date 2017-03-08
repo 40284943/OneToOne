@@ -39,6 +39,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent singleEvent = new Intent(getApplicationContext(), Event.class);
+                singleEvent.putExtra("Profile picture",Friend.createListOfFriends().get(position).getName());
                 startActivity(singleEvent);
             }
         });

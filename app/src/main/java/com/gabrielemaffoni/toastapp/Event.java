@@ -1,5 +1,6 @@
 package com.gabrielemaffoni.toastapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -8,6 +9,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 
@@ -23,6 +25,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 public class Event extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener {
     private static final int NUM_PAGES = 2;
 
+
     private ViewPager viewPager;
     private PagerAdapter adapter;
     private GoogleApiClient mGoogleApiClient;
@@ -31,6 +34,8 @@ public class Event extends FragmentActivity implements GoogleApiClient.OnConnect
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.single_event_layout);
+
+        Bundle previousIntent = getIntent().getExtras();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Places.GEO_DATA_API)
@@ -76,6 +81,8 @@ public class Event extends FragmentActivity implements GoogleApiClient.OnConnect
 
         }
     }
+
+
 
 
 

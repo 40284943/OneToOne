@@ -5,13 +5,12 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -24,18 +23,14 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.Map;
-
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static com.gabrielemaffoni.toastapp.WhatCard.*;
 
 /**
  * Created by gabrielemaffoni on 08/03/2017.
@@ -44,6 +39,7 @@ import static android.app.Activity.RESULT_OK;
 public class DateAndTime extends Fragment {
     static int PLACE_AUTOCOMPLETE_REQUESTE_CODE = 1;
     static String TAG = "Places";
+
     private TabLayout day;
     private TabLayout time;
     private Switch addLocation;
@@ -63,6 +59,10 @@ public class DateAndTime extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.date_time_location, container, false);
+        Bundle args = getArguments();
+        final int type = args.getInt("Type");
+
+
         day = (TabLayout) rootView.findViewById(R.id.day);
         time = (TabLayout) rootView.findViewById(R.id.time);
         addLocation = (Switch) rootView.findViewById(R.id.add_location);
@@ -94,8 +94,36 @@ public class DateAndTime extends Fragment {
         okay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View preconfirmation = getView().getRootView().findViewById(R.id.preconfirmation_layout);
-                preconfirmation.setVisibility(View.VISIBLE);
+                View preConfirmation = getView().getRootView().findViewById(R.id.preconfirmation_layout);
+                ImageView what = (ImageView) preConfirmation.findViewById(R.id.what);
+                ImageView receiver = (ImageView) preConfirmation.findViewById(R.id.receiver);
+                TextView date = (TextView) preConfirmation.findViewById(R.id.day);
+                TextView time = (TextView) preConfirmation.findViewById(R.id.time);
+                TextView where = (TextView) preConfirmation.findViewById(R.id.where_name);
+                TextView whereAddress = (TextView) preConfirmation.findViewById(R.id.where_address);
+                MapView mapPicked = (MapView) preConfirmation.findViewById(R.id.map_picked_conf);
+
+                //Check which event it is
+                int imageResource = 0;
+                switch (type){
+                    case BEER:
+                        imageResource = R.drawable.ic_beer;
+                        break;
+                    case COCKTAIL:
+                        imageResource = R.drawable.ic_cocktail;
+                        break;
+                    case LUNCH:
+                        imageResource = R.drawable.ic_lunch;
+                        break;
+                    case COFFEE:
+                        imageResource = R.drawable.ic_coffee;
+                        break;
+                }
+
+                //Set the event image
+                what.setImageResource(imageResource);
+
+                preConfirmation.setVisibility(View.VISIBLE);
             }
         });
         return rootView;
@@ -115,19 +143,21 @@ public class DateAndTime extends Fragment {
                 //find the elements inside mapsection
                 TextView nameLocation = (TextView) getView().findViewById(R.id.name_location);
                 TextView addressLocation = (TextView) getView().findViewById(R.id.address_location);
+                MapView mapView = (MapView) getView().findViewById(R.id.mapView);
 
-
+                //Copy the name and the location of the place
                 nameLocation.setText(place.getName());
                 addressLocation.setText(place.getAddress());
-               /* mapView.getMapAsync(new OnMapReadyCallback() {
+
+                mapView.onCreate(getArguments());
+                mapView.getMapAsync(new OnMapReadyCallback() {
                     @Override
                     public void onMapReady(GoogleMap googleMap) {
                         LatLng placePicked = place.getLatLng();
                         googleMap.addMarker(new MarkerOptions().position(placePicked));
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(placePicked));
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(placePicked,13));
                     }
-                });*/ //FIXME: how do i add the map?
-
+                });
 
                 //Shows a preview of the map
 
@@ -142,6 +172,8 @@ public class DateAndTime extends Fragment {
             }
         }
     }
+
+
 
 
 

@@ -20,6 +20,11 @@ public class WhatCard extends Fragment {
     private ImageView coffee;
     private ImageView lunch;
 
+   public static final int BEER = 1;
+    public static final int COCKTAIL = 2;
+   public static final int COFFEE = 3;
+    public static final int LUNCH = 4;
+
 
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceSatate){
@@ -38,6 +43,11 @@ public class WhatCard extends Fragment {
             @Override
             public void onClick(View v) {
                 DateAndTime when = new DateAndTime();
+                //Pass the type of event
+                Bundle args = new Bundle();
+                args.putInt("Type",BEER);
+                when.setArguments(args);
+                //start transaction
                 FragmentTransaction manager = getFragmentManager().beginTransaction();
                 manager.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, R.anim.slide_in_right, R.anim.slide_out_left);
                 manager.replace(R.id.what_card, when);
@@ -45,6 +55,8 @@ public class WhatCard extends Fragment {
                 manager.commit();
             }
         });
+
+
         return rootView;
     }
 
@@ -56,4 +68,6 @@ public class WhatCard extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+
 }
