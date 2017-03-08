@@ -5,7 +5,9 @@
     <string name="surname">Surname</string>
     <string name="profile_pic_description">User profile pic</string>
     <string name="profile_pic_description_chosen">User chosen profile pic</string>
+    <string name="activity_button_description">Activities button</string>
 
     <string name="what_do_you_like_to">Would you like to have</string>
     <string name="hey">Hey,</string>
+
 </resources>

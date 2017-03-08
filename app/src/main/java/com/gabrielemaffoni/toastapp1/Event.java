@@ -35,6 +35,7 @@ public class Event extends FragmentActivity {
 
         viewPager = (ViewPager) findViewById(R.id.cards);
         ImageView profilePicChosen = (ImageView) findViewById(R.id.profile_pic_chosen);
+        profilePicChosen.setImageResource(R.drawable.ic_user);
         adapter = new Adapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
 
