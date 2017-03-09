@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import static com.gabrielemaffoni.toastapp.to.EventObj.*;
+import static com.gabrielemaffoni.toastapp.to.Event.*;
 
 
 /**
@@ -22,7 +22,14 @@ public class WhatCard extends Fragment {
     private ImageView coffee;
     private ImageView lunch;
 
+    public static WhatCard newInstance() {
 
+        Bundle args = new Bundle();
+
+        WhatCard fragment = new WhatCard();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceSatate){
@@ -56,15 +63,6 @@ public class WhatCard extends Fragment {
 
 
         return rootView;
-    }
-
-    public static WhatCard newInstance() {
-
-        Bundle args = new Bundle();
-
-        WhatCard fragment = new WhatCard();
-        fragment.setArguments(args);
-        return fragment;
     }
 
 

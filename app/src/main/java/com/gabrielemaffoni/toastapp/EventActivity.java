@@ -22,7 +22,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
  * Created by gabrielemaffoni on 08/03/2017.
  */
 
-public class Event extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class EventActivity extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener {
     private static final int NUM_PAGES = 2;
 
 
@@ -56,34 +56,6 @@ public class Event extends FragmentActivity implements GoogleApiClient.OnConnect
         Log.i("Result", result.toString());
     }
 
-    public class Adapter extends FragmentPagerAdapter{
-        public Adapter(FragmentManager fragmentManager){
-            super(fragmentManager);
-        }
-
-        @Override
-        public int getCount(){
-            return NUM_PAGES;
-        }
-
-        @Override
-        public Fragment getItem(int position){
-            switch (position){
-                case 0:
-                    return WhatCard.newInstance();
-
-                case 1:
-                    return DateAndTime.newInstance();
-
-                default:
-                    return WhatCard.newInstance();
-            }
-
-        }
-    }
-
-
-
 @Override
     public void onBackPressed(){
 
@@ -110,6 +82,32 @@ public class Event extends FragmentActivity implements GoogleApiClient.OnConnect
         }
     }
 }
+
+    public class Adapter extends FragmentPagerAdapter {
+        public Adapter(FragmentManager fragmentManager) {
+            super(fragmentManager);
+        }
+
+        @Override
+        public int getCount() {
+            return NUM_PAGES;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    return WhatCard.newInstance();
+
+                case 1:
+                    return DateAndTime.newInstance();
+
+                default:
+                    return WhatCard.newInstance();
+            }
+
+        }
+    }
 
 
 

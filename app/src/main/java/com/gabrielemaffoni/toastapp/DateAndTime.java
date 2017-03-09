@@ -31,7 +31,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static com.gabrielemaffoni.toastapp.to.EventObj.*;
+import static com.gabrielemaffoni.toastapp.to.Event.*;
 
 /**
  *

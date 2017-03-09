@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "275025884159",
+    "firebase_url": "https://toastapp-one-t-1488456192914.firebaseio.com",
+    "project_id": "toastapp---one-t-1488456192914",
+    "storage_bucket": "toastapp---one-t-1488456192914.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:275025884159:android:0a5d7a2ead24e773",
+        "android_client_info": {
+          "package_name": "com.gabrielemaffoni.toastapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "275025884159-3bvu605j5qiuok79vuus6v4sq1vklfru.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gabrielemaffoni.toastapp",
+            "certificate_hash": "3c21f67df59c4f7102bd8a040d9dfefc298639a7"
+          }
+        },
+        {
+          "client_id": "275025884159-jqkun2cb44sjoaoj7bchd0onq3aofvj5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyvG7Nl5-OcM-LqMiMGLBDCXp-e_z7ZbQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "275025884159-jqkun2cb44sjoaoj7bchd0onq3aofvj5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

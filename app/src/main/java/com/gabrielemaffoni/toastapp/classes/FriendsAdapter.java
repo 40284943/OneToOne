@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.gabrielemaffoni.toastapp.R;
 import com.gabrielemaffoni.toastapp.to.Friend;
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 public class FriendsAdapter extends ArrayAdapter<Friend> {
             private Context context;
             private ArrayList<Friend> friendArrayList;
+
 
     public FriendsAdapter(Context context, ArrayList<Friend> friendArrayList)
     {
@@ -50,9 +52,12 @@ public class FriendsAdapter extends ArrayAdapter<Friend> {
         TextView name = (TextView) convertView.findViewById(R.id.name);
         TextView surname = (TextView) convertView.findViewById(R.id.surname);
 
-        name.setText(friend.getName());
-        surname.setText(friend.getSurname());
+
+        name.setText(friend.getUserName());
+        surname.setText(friend.getUserSurname());
 
         return convertView;
     }
+
+
 }

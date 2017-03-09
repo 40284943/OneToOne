@@ -1,10 +1,7 @@
 package com.gabrielemaffoni.toastapp.to;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import com.gabrielemaffoni.toastapp.db.UserDAO;
 
 import java.util.Date;
 
@@ -12,24 +9,24 @@ import java.util.Date;
  * Created by gabrielemaffoni on 08/03/2017.
  */
 
-public class EventObj implements Parcelable {
+public class Event {
 
     public static final int BEER = 1;
     public static final int COCKTAIL = 2;
     public static final int COFFEE = 3;
     public static final int LUNCH = 4;
-    public static final Parcelable.Creator<EventObj> CREATOR = new Parcelable.Creator<EventObj>() {
-        public EventObj createFromParcel(Parcel in) {
-            return new EventObj(in);
+    public static final Parcelable.Creator<Event> CREATOR = new Parcelable.Creator<Event>() {
+        public Event createFromParcel(Parcel in) {
+            return new Event(in);
         }
 
-        public EventObj[] newArray(int size) {
-            return new EventObj[size];
+        public Event[] newArray(int size) {
+            return new Event[size];
         }
     };
     private int id_event;
     private Friend receiver;
-    private UserDAO supportReceiver;
+
     private Date when;
     private int active;
     private int hour;
@@ -37,9 +34,11 @@ public class EventObj implements Parcelable {
     private int type;
     private String location;
 
-    public EventObj(){super();}
+    public Event() {
+        super();
+    }
 
-    private EventObj(Parcel in){
+    private Event(Parcel in) {
         super();
         this.id_event = in.readInt();
         this.receiver = in.readParcelable(Friend.class.getClassLoader());
@@ -75,12 +74,7 @@ public class EventObj implements Parcelable {
         this.receiver = friend;
     }
 
-    public void setReceiverById(int receiverId) {
 
-        Friend friend = supportReceiver.getSingleFriendById(receiverId);
-        this.receiver = friend;
-
-    }
 
     public Date getWhen() {
         return when;
@@ -122,46 +116,6 @@ public class EventObj implements Parcelable {
         this.location = location;
     }
 
-    @Override
-    public int hashCode(){
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + id_event;
-        return result;
-    }
 
-    @Override
-    public boolean equals(Object object){
-        if (this == object){
-            return true;
-        }
-        if (object == null){
-            return false;
-        }
-        if (getClass() != object.getClass()){
-            return false;
-        }
-        EventObj other = (EventObj) object;
-        if (id_event != other.id_event){
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public int describeContents(){
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int flags){
-        parcel.writeInt(getId_event());
-        parcel.writeParcelable(getReceiver(), flags);
-        parcel.writeLong(getWhen().getTime());
-        parcel.writeInt(getHour());
-        parcel.writeInt(getMinute());
-        parcel.writeInt(getActive());
-        parcel.writeInt(getType());
-    }
 
 }
