@@ -10,13 +10,16 @@ import com.gabrielemaffoni.toastapp.Event;
 import com.gabrielemaffoni.toastapp.to.EventObj;
 import com.gabrielemaffoni.toastapp.to.Friend;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 /**
  * Created by gabrielemaffoni on 08/03/2017.
  */
 
 public class EventDAO extends EventDBDAO {
-    public static final String EVENT_ID_WITH_PREVIX = "event.id";
-
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
 
     private static final String WHERE_ID_EQUALS = DataBaseHelper.E_EVENT_ID_COL + " =?";
 
@@ -28,7 +31,7 @@ public class EventDAO extends EventDBDAO {
    public long save(EventObj event){
        ContentValues values = new ContentValues();
        values.put(DataBaseHelper.E_USER_INVITED_ID_COL, event.getReceiver().getUserId());
-       values.put(DataBaseHelper.E_WHEN_COL, event.getWhen());
+       values.put(DataBaseHelper.E_WHEN_COL, formatter.format(event.getWhen()));
        values.put(DataBaseHelper.E_HOUR_COL, event.getHour());
        values.put(DataBaseHelper.E_MINUTE_COL, event.getMinute());
        values.put(DataBaseHelper.E_LOCATION_COL, event.getLocation());
@@ -42,7 +45,7 @@ public class EventDAO extends EventDBDAO {
     public long update(EventObj event){
         ContentValues values = new ContentValues();
         values.put(DataBaseHelper.E_USER_INVITED_ID_COL, event.getReceiver().getUserId());
-        values.put(DataBaseHelper.E_WHEN_COL, event.getWhen());
+        values.put(DataBaseHelper.E_WHEN_COL, formatter.format(event.getWhen()));
         values.put(DataBaseHelper.E_HOUR_COL, event.getHour());
         values.put(DataBaseHelper.E_MINUTE_COL, event.getMinute());
         values.put(DataBaseHelper.E_LOCATION_COL, event.getLocation());
@@ -77,7 +80,7 @@ public class EventDAO extends EventDBDAO {
                EventObj event = new EventObj();
                event.setId_event(c.getInt(0));
                event.setReceiverById(c.getInt(1));
-               event.setWhen(c.getInt(2));
+               event.setWhen(Date.valueOf(Double.toString(c.getDouble(2))));//FIXME find the right code
                event.setHour(c.getInt(3));
                event.setMinute(c.getInt(4));
                event.setLocation(c.getString(5));
@@ -95,7 +98,7 @@ public class EventDAO extends EventDBDAO {
     public void loadEvent(EventObj event){
         ContentValues values = new ContentValues();
         values.put(DataBaseHelper.E_USER_INVITED_ID_COL, event.getReceiver().getUserId());
-        values.put(DataBaseHelper.E_WHEN_COL, event.getWhen());
+        values.put(DataBaseHelper.E_WHEN_COL, formatter.format(event.getWhen()));
         values.put(DataBaseHelper.E_HOUR_COL, event.getHour());
         values.put(DataBaseHelper.E_MINUTE_COL, event.getMinute());
         values.put(DataBaseHelper.E_LOCATION_COL, event.getLocation());

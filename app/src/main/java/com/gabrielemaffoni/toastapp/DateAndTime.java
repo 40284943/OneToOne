@@ -31,24 +31,22 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static com.gabrielemaffoni.toastapp.WhatCard.*;
+import static com.gabrielemaffoni.toastapp.to.EventObj.*;
 
 /**
- * Created by gabrielemaffoni on 08/03/2017.
+ *
  */
 
 public class DateAndTime extends Fragment {
+    public static boolean IS_PRESSED = false;
     static int PLACE_AUTOCOMPLETE_REQUESTE_CODE = 1;
     static String TAG = "Places";
-
     private TabLayout day;
     private TabLayout time;
     private Switch addLocation;
     private MapView mapView;
     private GoogleMap googleMap;
     private FloatingActionButton okay;
-    public static boolean IS_PRESSED = false;
-
 
     public static DateAndTime newInstance() {
 

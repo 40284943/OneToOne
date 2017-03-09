@@ -6,6 +6,8 @@ import android.os.Parcelable;
 
 import com.gabrielemaffoni.toastapp.db.UserDAO;
 
+import java.util.Date;
+
 /**
  * Created by gabrielemaffoni on 08/03/2017.
  */
@@ -16,11 +18,19 @@ public class EventObj implements Parcelable {
     public static final int COCKTAIL = 2;
     public static final int COFFEE = 3;
     public static final int LUNCH = 4;
+    public static final Parcelable.Creator<EventObj> CREATOR = new Parcelable.Creator<EventObj>() {
+        public EventObj createFromParcel(Parcel in) {
+            return new EventObj(in);
+        }
 
+        public EventObj[] newArray(int size) {
+            return new EventObj[size];
+        }
+    };
     private int id_event;
     private Friend receiver;
     private UserDAO supportReceiver;
-    private int when;
+    private Date when;
     private int active;
     private int hour;
     private int minute;
@@ -33,7 +43,7 @@ public class EventObj implements Parcelable {
         super();
         this.id_event = in.readInt();
         this.receiver = in.readParcelable(Friend.class.getClassLoader());
-        this.when = in.readInt();
+        this.when = new Date(in.readLong());
         this.active = in.readInt();
         this.hour = in.readInt();
         this.minute = in.readInt();
@@ -65,8 +75,6 @@ public class EventObj implements Parcelable {
         this.receiver = friend;
     }
 
-
-
     public void setReceiverById(int receiverId) {
 
         Friend friend = supportReceiver.getSingleFriendById(receiverId);
@@ -74,11 +82,11 @@ public class EventObj implements Parcelable {
 
     }
 
-    public int getWhen() {
+    public Date getWhen() {
         return when;
     }
 
-    public void setWhen(int when) {
+    public void setWhen(Date when) {
         this.when = when;
     }
 
@@ -149,21 +157,11 @@ public class EventObj implements Parcelable {
     public void writeToParcel(Parcel parcel, int flags){
         parcel.writeInt(getId_event());
         parcel.writeParcelable(getReceiver(), flags);
-        parcel.writeInt(getWhen());
+        parcel.writeLong(getWhen().getTime());
         parcel.writeInt(getHour());
         parcel.writeInt(getMinute());
         parcel.writeInt(getActive());
         parcel.writeInt(getType());
     }
-
-    public static final Parcelable.Creator<EventObj> CREATOR = new Parcelable.Creator<EventObj>(){
-        public EventObj createFromParcel(Parcel in){
-            return new EventObj(in);
-        }
-
-        public EventObj[] newArray(int size){
-            return new EventObj[size];
-        }
-    };
 
 }
