@@ -89,5 +89,10 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
 
 }

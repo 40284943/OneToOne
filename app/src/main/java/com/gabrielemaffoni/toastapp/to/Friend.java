@@ -3,6 +3,8 @@ package com.gabrielemaffoni.toastapp.to;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.gabrielemaffoni.toastapp.R;
+
 import java.sql.Blob;
 import java.util.ArrayList;
 
@@ -11,6 +13,13 @@ import java.util.ArrayList;
  */
 
 public class Friend {
+
+    public final static int AVATAR_STANDARD = R.drawable.ic_user;
+    public final static int AVATAR1 = R.drawable.ic_avatar_02;
+    public final static int AVATAR2 = R.drawable.ic_avatar_03;
+    public final static int AVATAR3 = R.drawable.ic_avatar_04;
+    public final static int AVATAR4 = R.drawable.ic_avatar_05;
+
     public String userId;
     public String userName;
     public String userSurname;

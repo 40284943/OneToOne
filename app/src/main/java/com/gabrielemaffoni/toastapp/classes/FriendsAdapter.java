@@ -1,10 +1,16 @@
 package com.gabrielemaffoni.toastapp.classes;
 
 import android.content.Context;
+import android.content.res.XmlResourceParser;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gabrielemaffoni.toastapp.R;
@@ -12,6 +18,8 @@ import com.gabrielemaffoni.toastapp.to.Friend;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
+
+import static com.gabrielemaffoni.toastapp.to.Friend.*;
 
 /**
  * Created by gabrielemaffoni on 08/03/2017.
@@ -51,10 +59,16 @@ public class FriendsAdapter extends ArrayAdapter<Friend> {
 
         TextView name = (TextView) convertView.findViewById(R.id.name);
         TextView surname = (TextView) convertView.findViewById(R.id.surname);
+        ImageView avatar = (ImageView) convertView.findViewById(R.id.profile_pic);
+
 
 
         name.setText(friend.getUserName());
         surname.setText(friend.getUserSurname());
+
+
+        avatar.setImageResource(friend.getUserProfilePic());
+
 
         return convertView;
     }
