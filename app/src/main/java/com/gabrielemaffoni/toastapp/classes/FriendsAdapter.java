@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.gabrielemaffoni.toastapp.R;
+import com.gabrielemaffoni.toastapp.to.Friend;
 
 import java.util.ArrayList;
 

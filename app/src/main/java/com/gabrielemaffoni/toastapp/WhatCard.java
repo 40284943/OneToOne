@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import static com.gabrielemaffoni.toastapp.to.EventObj.*;
+
 
 /**
  * Created by gabrielemaffoni on 08/03/2017.
@@ -20,10 +22,6 @@ public class WhatCard extends Fragment {
     private ImageView coffee;
     private ImageView lunch;
 
-   public static final int BEER = 1;
-    public static final int COCKTAIL = 2;
-   public static final int COFFEE = 3;
-    public static final int LUNCH = 4;
 
 
     @Override

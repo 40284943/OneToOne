@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -46,6 +47,8 @@ public class DateAndTime extends Fragment {
     private MapView mapView;
     private GoogleMap googleMap;
     private FloatingActionButton okay;
+    public static boolean IS_PRESSED = false;
+
 
     public static DateAndTime newInstance() {
 
@@ -55,6 +58,8 @@ public class DateAndTime extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
@@ -69,6 +74,8 @@ public class DateAndTime extends Fragment {
         mapView = (MapView) rootView.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         okay = (FloatingActionButton) rootView.findViewById(R.id.okay);
+
+
 
 
         addLocation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -102,9 +109,12 @@ public class DateAndTime extends Fragment {
                 TextView where = (TextView) preConfirmation.findViewById(R.id.where_name);
                 TextView whereAddress = (TextView) preConfirmation.findViewById(R.id.where_address);
                 MapView mapPicked = (MapView) preConfirmation.findViewById(R.id.map_picked_conf);
+                Button done = (Button) preConfirmation.findViewById(R.id.done);
+                IS_PRESSED = true;
 
                 //Check which event it is
                 int imageResource = 0;
+
                 switch (type){
                     case BEER:
                         imageResource = R.drawable.ic_beer;
@@ -123,7 +133,12 @@ public class DateAndTime extends Fragment {
                 //Set the event image
                 what.setImageResource(imageResource);
 
+
+
                 preConfirmation.setVisibility(View.VISIBLE);
+
+
+
             }
         });
         return rootView;
@@ -172,6 +187,7 @@ public class DateAndTime extends Fragment {
             }
         }
     }
+
 
 
 

@@ -30,4 +30,5 @@
     <string name="address">Address</string>
     <string name="day">Date</string>
     <string name="time">Time</string>
+    <string name="button_done">Send invite</string>
 </resources>

@@ -9,7 +9,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 
-import com.gabrielemaffoni.toastapp.classes.Friend;
+import com.gabrielemaffoni.toastapp.to.Friend;
 import com.gabrielemaffoni.toastapp.classes.FriendsAdapter;
 
 import java.util.ArrayList;

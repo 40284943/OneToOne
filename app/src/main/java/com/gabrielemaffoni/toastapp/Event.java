@@ -84,6 +84,32 @@ public class Event extends FragmentActivity implements GoogleApiClient.OnConnect
 
 
 
+@Override
+    public void onBackPressed(){
+
+    //The overridden method checks before if we are already at the end of the process of selecting all the appointments data
+    if(DateAndTime.IS_PRESSED){
+
+        /*
+        If so, it goes to the previous visualisation
+         */
+
+        View preconfirmation = findViewById(R.id.preconfirmation_layout);
+        preconfirmation.setVisibility(View.GONE);
+        DateAndTime.IS_PRESSED = false;
+
+        /*
+        Otherwise its behaviours are normal.
+         */
+    } else {
+        int count = getFragmentManager().getBackStackEntryCount();
+        if (count == 0){
+            super.onBackPressed();
+        } else {
+            getFragmentManager().popBackStack();
+        }
+    }
+}
 
 
 
