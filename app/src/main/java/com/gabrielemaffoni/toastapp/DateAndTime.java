@@ -31,10 +31,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static com.gabrielemaffoni.toastapp.to.Event.BEER;
-import static com.gabrielemaffoni.toastapp.to.Event.COCKTAIL;
-import static com.gabrielemaffoni.toastapp.to.Event.COFFEE;
-import static com.gabrielemaffoni.toastapp.to.Event.LUNCH;
+import static com.gabrielemaffoni.toastapp.utils.Static.*;
+
 
 /**
  *

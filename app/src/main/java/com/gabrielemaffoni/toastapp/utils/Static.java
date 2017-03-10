@@ -31,6 +31,7 @@ public class Static {
     public final static String USURNAME = "userSurname";
     public final static String UPASSWORD = "userPassword";
     public final static String UPROFPIC = "userProfilePic";
+    public final static String UEMAIL = "userEmail";
 
 
     public final static String UDB = "users";

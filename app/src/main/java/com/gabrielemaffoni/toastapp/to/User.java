@@ -31,6 +31,18 @@ public class User {
         this.userSurname = userSurname;
     }
 
+    public User(String userId, String userName, String userSurname) {
+        this.userId = userId;
+        this.userName = userName;
+        this.userSurname = userSurname;
+    }
+
+    public User(String userName, String userSurname, int userProfilePic) {
+        this.userName = userName;
+        this.userSurname = userSurname;
+        this.userProfilePic = userProfilePic;
+    }
+
     public User(String userId, String userName, String userSurname, String userEmail, String userPassword, int userProfilePic) {
         this.userId = userId;
         this.userName = userName;

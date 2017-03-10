@@ -45,7 +45,9 @@ public class HomeActivity extends AppCompatActivity {
             Intent startApp = new Intent(this, Login.class);
             startActivity(startApp);
         }
-        friendsDatabase = FirebaseDatabase.getInstance().getReference().child(USER_DB_NAME).child(FRIENDS_DB_NAME);
+
+        String currentUserId = firebaseAuth.getCurrentUser().getUid();
+        friendsDatabase = FirebaseDatabase.getInstance().getReference().child(FRIENDS_DB_NAME).child(currentUserId);
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -59,7 +61,7 @@ public class HomeActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
 
                 if (item.getTitle().equals(ADD_USER)) {
-                    Intent activity = new Intent(getApplicationContext(), AddUser.class);
+                    Intent activity = new Intent(getApplicationContext(), SearchUser.class);
                     startActivity(activity);
                 } else if (item.getTitle().equals(LOGOUT)) {
                     firebaseAuth.signOut();
