@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import static com.gabrielemaffoni.toastapp.to.Event.*;
+import static com.gabrielemaffoni.toastapp.to.Event.BEER;
 
 
 /**
@@ -32,7 +32,7 @@ public class WhatCard extends Fragment {
     }
 
     @Override
-    public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceSatate){
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceSatate) {
         final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.what_card, container, false);
         beer = (ImageView) rootView.findViewById(R.id.beer);
         cocktail = (ImageView) rootView.findViewById(R.id.cocktail);
@@ -50,7 +50,7 @@ public class WhatCard extends Fragment {
                 DateAndTime when = new DateAndTime();
                 //Pass the type of event
                 Bundle args = new Bundle();
-                args.putInt("Type",BEER);
+                args.putInt("Type", BEER);
                 when.setArguments(args);
                 //start transaction
                 FragmentTransaction manager = getFragmentManager().beginTransaction();

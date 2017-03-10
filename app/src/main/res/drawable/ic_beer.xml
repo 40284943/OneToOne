@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:viewportWidth="128"
-    android:viewportHeight="128"
     android:width="128dp"
-    android:height="128dp">
+    android:height="128dp"
+    android:viewportHeight="128"
+    android:viewportWidth="128">
     <path
-        android:pathData="M27 47.61c0 0 25 -3.61 36 0.39 11 4 35 0 35 0L90.55 74.5 83 121 43 121 35.57 73.16Z"
-        android:fillColor="@color/colorGreyDarkest" />
+        android:fillColor="@color/colorGreyDarkest"
+        android:pathData="M27 47.61c0 0 25 -3.61 36 0.39 11 4 35 0 35 0L90.55 74.5 83 121 43 121 35.57 73.16Z" />
     <path
         android:pathData="M90.5 64.5l-8 56 -40 0 -7 -56 -6 -10 0 -26 67 0 0 0 0 27z"
-        android:strokeWidth="9"
         android:strokeColor="@color/colorGreyDarkest"
-        android:strokeMiterLimit="10" />
+        android:strokeMiterLimit="10"
+        android:strokeWidth="9" />
     <path
-        android:pathData="M54 14.5A4.5 4.5 0 0 1 49.5 19 4.5 4.5 0 0 1 45 14.5 4.5 4.5 0 0 1 49.5 10 4.5 4.5 0 0 1 54 14.5Z"
-        android:fillColor="@color/colorGreyDarkest" />
+        android:fillColor="@color/colorGreyDarkest"
+        android:pathData="M54 14.5A4.5 4.5 0 0 1 49.5 19 4.5 4.5 0 0 1 45 14.5 4.5 4.5 0 0 1 49.5 10 4.5 4.5 0 0 1 54 14.5Z" />
     <path
-        android:pathData="M81 5.5A4.5 4.5 0 0 1 76.5 10 4.5 4.5 0 0 1 72 5.5 4.5 4.5 0 0 1 76.5 1 4.5 4.5 0 0 1 81 5.5Z"
-        android:fillColor="@color/colorGreyDarkest" />
+        android:fillColor="@color/colorGreyDarkest"
+        android:pathData="M81 5.5A4.5 4.5 0 0 1 76.5 10 4.5 4.5 0 0 1 72 5.5 4.5 4.5 0 0 1 76.5 1 4.5 4.5 0 0 1 81 5.5Z" />
     <path
-        android:pathData="M61 4.5A2.5 2.5 0 0 1 58.5 7 2.5 2.5 0 0 1 56 4.5 2.5 2.5 0 0 1 58.5 2 2.5 2.5 0 0 1 61 4.5Z"
-        android:fillColor="@color/colorGreyDarkest" />
+        android:fillColor="@color/colorGreyDarkest"
+        android:pathData="M61 4.5A2.5 2.5 0 0 1 58.5 7 2.5 2.5 0 0 1 56 4.5 2.5 2.5 0 0 1 58.5 2 2.5 2.5 0 0 1 61 4.5Z" />
     <path
-        android:pathData="M70 14.5A2.5 2.5 0 0 1 67.5 17 2.5 2.5 0 0 1 65 14.5 2.5 2.5 0 0 1 67.5 12 2.5 2.5 0 0 1 70 14.5Z"
-        android:fillColor="@color/colorGreyDarkest" />
+        android:fillColor="@color/colorGreyDarkest"
+        android:pathData="M70 14.5A2.5 2.5 0 0 1 67.5 17 2.5 2.5 0 0 1 65 14.5 2.5 2.5 0 0 1 67.5 12 2.5 2.5 0 0 1 70 14.5Z" />
 </vector>

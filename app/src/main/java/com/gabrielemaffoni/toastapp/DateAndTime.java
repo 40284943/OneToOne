@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
-
+import com.gabrielemaffoni.toastapp.to.Event;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
@@ -31,7 +31,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static com.gabrielemaffoni.toastapp.to.Event.*;
+import static com.gabrielemaffoni.toastapp.to.Event.BEER;
+import static com.gabrielemaffoni.toastapp.to.Event.COCKTAIL;
+import static com.gabrielemaffoni.toastapp.to.Event.COFFEE;
+import static com.gabrielemaffoni.toastapp.to.Event.LUNCH;
 
 /**
  *
@@ -47,6 +50,7 @@ public class DateAndTime extends Fragment {
     private MapView mapView;
     private GoogleMap googleMap;
     private FloatingActionButton okay;
+    private Event event;
 
     public static DateAndTime newInstance() {
 
@@ -56,7 +60,6 @@ public class DateAndTime extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
 
 
     @Override
@@ -74,12 +77,10 @@ public class DateAndTime extends Fragment {
         okay = (FloatingActionButton) rootView.findViewById(R.id.okay);
 
 
-
-
         addLocation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
 
                     //opens the activity to find the right location
                     try {
@@ -113,7 +114,7 @@ public class DateAndTime extends Fragment {
                 //Check which event it is
                 int imageResource = 0;
 
-                switch (type){
+                switch (type) {
                     case BEER:
                         imageResource = R.drawable.ic_beer;
                         break;
@@ -132,9 +133,7 @@ public class DateAndTime extends Fragment {
                 what.setImageResource(imageResource);
 
 
-
                 preConfirmation.setVisibility(View.VISIBLE);
-
 
 
             }
@@ -143,10 +142,10 @@ public class DateAndTime extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
-        if(requestCode == PLACE_AUTOCOMPLETE_REQUESTE_CODE){
-            if (resultCode == RESULT_OK){
-                final Place place = PlaceAutocomplete.getPlace(this.getContext(),data);
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUESTE_CODE) {
+            if (resultCode == RESULT_OK) {
+                final Place place = PlaceAutocomplete.getPlace(this.getContext(), data);
 
 
                 //show the mapsection
@@ -168,27 +167,23 @@ public class DateAndTime extends Fragment {
                     public void onMapReady(GoogleMap googleMap) {
                         LatLng placePicked = place.getLatLng();
                         googleMap.addMarker(new MarkerOptions().position(placePicked));
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(placePicked,13));
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(placePicked, 20));
                     }
                 });
 
                 //Shows a preview of the map
 
 
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR){
-                Status status = PlaceAutocomplete.getStatus(this.getContext(),data);
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this.getContext(), data);
 
-                Log.i(TAG,status.getStatusMessage());
-            } else if (resultCode == RESULT_CANCELED){
+                Log.i(TAG, status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
                 addLocation = (Switch) getView().findViewById(R.id.add_location);
                 addLocation.setChecked(false);
             }
         }
     }
-
-
-
-
 
 
 }

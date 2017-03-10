@@ -3,6 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/add_user"
+        android:icon="@drawable/ic_add_user"
+        android:numericShortcut="0"
         android:title="Add user"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/logout"
+        android:icon="@drawable/ic_logout"
+        android:numericShortcut="1"
+        android:title="Logout"
         app:showAsAction="ifRoom" />
 </menu>

@@ -50,8 +50,8 @@
         android:visibility="gone">
 
         <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="Choose an avatar"
             android:textAlignment="center" />
@@ -100,5 +100,5 @@
                     app:srcCompat="@drawable/ic_avatar_05" />
             </LinearLayout>
         </HorizontalScrollView>
-</LinearLayout>
+    </LinearLayout>
 </RelativeLayout>

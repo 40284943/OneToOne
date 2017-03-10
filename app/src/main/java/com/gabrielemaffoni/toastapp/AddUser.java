@@ -1,6 +1,5 @@
 package com.gabrielemaffoni.toastapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -14,7 +13,11 @@ import com.gabrielemaffoni.toastapp.to.Friend;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import static com.gabrielemaffoni.toastapp.to.Friend.*;
+import static com.gabrielemaffoni.toastapp.to.Friend.AVATAR1;
+import static com.gabrielemaffoni.toastapp.to.Friend.AVATAR2;
+import static com.gabrielemaffoni.toastapp.to.Friend.AVATAR3;
+import static com.gabrielemaffoni.toastapp.to.Friend.AVATAR4;
+import static com.gabrielemaffoni.toastapp.to.Friend.AVATAR_STANDARD;
 
 /**
  * Created by gabrielemaffoni on 09/03/2017.
@@ -74,7 +77,6 @@ public class AddUser extends AppCompatActivity {
                 });
             }
         });
-
 
 
         Button add = (Button) findViewById(R.id.add);

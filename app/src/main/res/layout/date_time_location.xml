@@ -82,13 +82,13 @@
 
 
                 <com.google.android.gms.maps.MapView
-                    map:cameraZoom="13"
-                    map:liteMode="true"
-                    map:mapType="normal"
                     android:id="@+id/mapView"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    map:cameraZoom="13"
+                    map:liteMode="true"
+                    map:mapType="normal" />
 
                 <TextView
                     android:id="@+id/name_location"

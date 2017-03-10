@@ -1,9 +1,6 @@
 package com.gabrielemaffoni.toastapp.to;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Created by gabrielemaffoni on 08/03/2017.
@@ -15,19 +12,11 @@ public class Event {
     public static final int COCKTAIL = 2;
     public static final int COFFEE = 3;
     public static final int LUNCH = 4;
-    public static final Parcelable.Creator<Event> CREATOR = new Parcelable.Creator<Event>() {
-        public Event createFromParcel(Parcel in) {
-            return new Event(in);
-        }
 
-        public Event[] newArray(int size) {
-            return new Event[size];
-        }
-    };
     private int id_event;
     private Friend receiver;
 
-    private Date when;
+    private GregorianCalendar when;
     private int active;
     private int hour;
     private int minute;
@@ -35,27 +24,18 @@ public class Event {
     private String location;
 
     public Event() {
-        super();
+
     }
 
-    private Event(Parcel in) {
-        super();
-        this.id_event = in.readInt();
-        this.receiver = in.readParcelable(Friend.class.getClassLoader());
-        this.when = new Date(in.readLong());
-        this.active = in.readInt();
-        this.hour = in.readInt();
-        this.minute = in.readInt();
-        this.location = in.readString();
-        this.type = in.readInt();
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
+    public Event(int id_event, Friend receiver, GregorianCalendar when, int active, int hour, int minute, int type, String location) {
+        this.id_event = id_event;
+        this.receiver = receiver;
+        this.when = when;
+        this.active = active;
+        this.hour = hour;
+        this.minute = minute;
         this.type = type;
+        this.location = location;
     }
 
     public int getId_event() {
@@ -70,17 +50,15 @@ public class Event {
         return receiver;
     }
 
-    public void setReceiver(Friend friend){
-        this.receiver = friend;
+    public void setReceiver(Friend receiver) {
+        this.receiver = receiver;
     }
 
-
-
-    public Date getWhen() {
+    public GregorianCalendar getWhen() {
         return when;
     }
 
-    public void setWhen(Date when) {
+    public void setWhen(GregorianCalendar when) {
         this.when = when;
     }
 
@@ -108,6 +86,14 @@ public class Event {
         this.minute = minute;
     }
 
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
     public String getLocation() {
         return location;
     }
@@ -115,7 +101,4 @@ public class Event {
     public void setLocation(String location) {
         this.location = location;
     }
-
-
-
 }
