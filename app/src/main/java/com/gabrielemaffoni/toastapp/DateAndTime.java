@@ -3,6 +3,7 @@ package com.gabrielemaffoni.toastapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -29,18 +30,27 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static com.gabrielemaffoni.toastapp.utils.Static.*;
 
-
 /**
+ *
+ * TODO: Add time choices (!IMPORTANT)
+ * TODO: Add data sharing with confirmation (!IMPORTANT)
+ * TODO: Add code to set the event on the database (!IMPORTANT)
+ *
+ *
  *
  */
 
 public class DateAndTime extends Fragment {
     public static boolean IS_PRESSED = false;
-    static int PLACE_AUTOCOMPLETE_REQUESTE_CODE = 1;
+    static int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     static String TAG = "Places";
     private TabLayout day;
     private TabLayout time;
@@ -74,6 +84,8 @@ public class DateAndTime extends Fragment {
         mapView.onCreate(savedInstanceState);
         okay = (FloatingActionButton) rootView.findViewById(R.id.okay);
 
+        setTab(time, returnCurrentDate());
+
 
         addLocation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -83,7 +95,7 @@ public class DateAndTime extends Fragment {
                     //opens the activity to find the right location
                     try {
                         Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN).build(getActivity());
-                        startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUESTE_CODE);
+                        startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
                     } catch (GooglePlayServicesRepairableException e) {
                         //HANDLER
                     } catch (GooglePlayServicesNotAvailableException e) {
@@ -94,6 +106,7 @@ public class DateAndTime extends Fragment {
                 }
             }
         });
+
 
         okay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,26 +122,10 @@ public class DateAndTime extends Fragment {
                 Button done = (Button) preConfirmation.findViewById(R.id.done);
                 IS_PRESSED = true;
 
-                //Check which event it is
-                int imageResource = 0;
 
-                switch (type) {
-                    case BEER:
-                        imageResource = R.drawable.ic_beer;
-                        break;
-                    case COCKTAIL:
-                        imageResource = R.drawable.ic_cocktail;
-                        break;
-                    case LUNCH:
-                        imageResource = R.drawable.ic_lunch;
-                        break;
-                    case COFFEE:
-                        imageResource = R.drawable.ic_coffee;
-                        break;
-                }
 
                 //Set the event image
-                what.setImageResource(imageResource);
+                what.setImageResource(findRightImageResource(type));
 
 
                 preConfirmation.setVisibility(View.VISIBLE);
@@ -141,7 +138,7 @@ public class DateAndTime extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PLACE_AUTOCOMPLETE_REQUESTE_CODE) {
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 final Place place = PlaceAutocomplete.getPlace(this.getContext(), data);
 
@@ -181,6 +178,45 @@ public class DateAndTime extends Fragment {
                 addLocation.setChecked(false);
             }
         }
+    }
+
+
+    private String returnCurrentDate() {
+        Calendar today = Calendar.getInstance();
+        DateFormat formatter = new SimpleDateFormat("dd.mm.yyyy HH:mm");
+
+
+        String todayFormatted = formatter.format(today.getTime());
+
+        return todayFormatted;
+
+    }
+
+    private int findRightImageResource(int type) {
+        //Check which event it is
+        int imageResource = 0;
+
+        switch (type) {
+            case BEER:
+                imageResource = R.drawable.ic_beer;
+                break;
+            case COCKTAIL:
+                imageResource = R.drawable.ic_cocktail;
+                break;
+            case LUNCH:
+                imageResource = R.drawable.ic_lunch;
+                break;
+            case COFFEE:
+                imageResource = R.drawable.ic_coffee;
+                break;
+        }
+
+        return imageResource;
+    }
+
+    private void setTab(TabLayout tabLayout, String textToTab) {
+        tabLayout.removeAllTabs();
+        tabLayout.addTab(tabLayout.newTab().setText(textToTab));
     }
 
 

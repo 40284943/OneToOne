@@ -21,6 +21,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+//TODO add notifications (check onChildChanged - or similar) (!IMPORTANT)
+//TODO Add personal settings(!IMPORTANT)
+//TODO Add possibility to delete friend (!IMPORTANT)
+//TODO Add possibility to change avatar (< IMPORTANT)
 public class HomeActivity extends AppCompatActivity {
 
     public static final String USER_DB_NAME = "users";

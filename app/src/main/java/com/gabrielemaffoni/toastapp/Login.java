@@ -15,6 +15,9 @@ import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * Created by gabrielemaffoni on 09/03/2017.
+ *
+ *
+ *
  */
 
 public class Login extends AppCompatActivity implements View.OnClickListener {
@@ -48,7 +51,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     private void userLogin() {
         String user = username.getText().toString().trim();
         String pass = password.getText().toString().trim();
-
+//FIXME add condition for the username and password to be empty.
         firebaseAuth.signInWithEmailAndPassword(user, pass).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {

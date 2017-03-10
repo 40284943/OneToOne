@@ -54,7 +54,7 @@ public class WhatCard extends Fragment {
                 when.setArguments(args);
                 //start transaction
                 FragmentTransaction manager = getFragmentManager().beginTransaction();
-                manager.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, R.anim.slide_in_right, R.anim.slide_out_left);
+                manager.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, R.anim.slide_in_right, R.anim.slide_out_left);//FIXME animations don't work properly. Check it out!
                 manager.replace(R.id.what_card, when);
                 manager.addToBackStack("Transaction1");
                 manager.commit();

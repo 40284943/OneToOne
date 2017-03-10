@@ -20,6 +20,9 @@ import com.google.android.gms.location.places.Places;
  * Created by gabrielemaffoni on 08/03/2017.
  */
 
+
+//TODO: Add the change of upperpart once clicked the type of event
+
 public class EventActivity extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener {
     private static final int NUM_PAGES = 2;
 
@@ -68,8 +71,8 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
         If so, it goes to the previous visualisation
          */
 
-            View preconfirmation = findViewById(R.id.preconfirmation_layout);
-            preconfirmation.setVisibility(View.GONE);
+            View preConfirmation = findViewById(R.id.preconfirmation_layout);
+            preConfirmation.setVisibility(View.GONE);
             DateAndTime.IS_PRESSED = false;
 
         /*

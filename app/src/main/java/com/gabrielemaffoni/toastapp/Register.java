@@ -22,6 +22,8 @@ import com.google.firebase.database.FirebaseDatabase;
  * Created by gabrielemaffoni on 09/03/2017.
  */
 
+//TODO add the possibility to choose the avatar.
+
 public class Register extends AppCompatActivity implements View.OnClickListener {
     DatabaseReference db;
     private EditText name;
@@ -77,7 +79,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
     private void writeNewUser(String name, String surname, String email, String password) {
         User user = new User(name, surname, email, password);
-
+//FIXME add condition for the username and password to be empty.
         user.setUserId(firebaseAuth.getCurrentUser().getUid());
 
         user.setUserProfilePic(Static.AVATAR_STANDARD);
