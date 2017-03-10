@@ -13,11 +13,7 @@ import com.gabrielemaffoni.toastapp.to.Friend;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import static com.gabrielemaffoni.toastapp.to.Friend.AVATAR1;
-import static com.gabrielemaffoni.toastapp.to.Friend.AVATAR2;
-import static com.gabrielemaffoni.toastapp.to.Friend.AVATAR3;
-import static com.gabrielemaffoni.toastapp.to.Friend.AVATAR4;
-import static com.gabrielemaffoni.toastapp.to.Friend.AVATAR_STANDARD;
+import static com.gabrielemaffoni.toastapp.utils.Static.*;
 
 /**
  * Created by gabrielemaffoni on 09/03/2017.

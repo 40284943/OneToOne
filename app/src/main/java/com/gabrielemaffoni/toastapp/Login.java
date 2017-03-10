@@ -39,6 +39,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         username = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
         submit = (Button) findViewById(R.id.login);
+        register = (Button) findViewById(R.id.register);
 
         submit.setOnClickListener(this);
         register.setOnClickListener(this);
@@ -61,9 +62,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     }
 
     private void userRegister() {
-        Intent register = new Intent(getApplicationContext(), Register.class);
+        Intent registerActivity = new Intent(getApplicationContext(), Register.class);
         finish();
-        startActivity(register);
+        startActivity(registerActivity);
     }
 
     @Override

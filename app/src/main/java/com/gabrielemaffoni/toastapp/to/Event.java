@@ -8,10 +8,6 @@ import java.util.GregorianCalendar;
 
 public class Event {
 
-    public static final int BEER = 1;
-    public static final int COCKTAIL = 2;
-    public static final int COFFEE = 3;
-    public static final int LUNCH = 4;
 
     private int id_event;
     private Friend receiver;

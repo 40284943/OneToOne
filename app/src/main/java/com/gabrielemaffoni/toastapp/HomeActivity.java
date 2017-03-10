@@ -24,6 +24,7 @@ import java.util.ArrayList;
 public class HomeActivity extends AppCompatActivity {
 
     public static final String USER_DB_NAME = "users";
+    public static final String FRIENDS_DB_NAME = "friends";
     public static final String USER_ID = "user_id";
     public static final String ADD_USER = "Add user";
     public static final String LOGOUT = "Logout";
@@ -44,7 +45,7 @@ public class HomeActivity extends AppCompatActivity {
             Intent startApp = new Intent(this, Login.class);
             startActivity(startApp);
         }
-        friendsDatabase = FirebaseDatabase.getInstance().getReference().child(USER_DB_NAME);
+        friendsDatabase = FirebaseDatabase.getInstance().getReference().child(USER_DB_NAME).child(FRIENDS_DB_NAME);
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -83,7 +84,7 @@ public class HomeActivity extends AppCompatActivity {
                     friendArrayList.add(friend);
                 }
                 FriendsAdapter adapter = new FriendsAdapter(getApplicationContext(), friendArrayList);
-                grid.setAdapter(adapter);
+                setGridDesignData(grid, adapter);
 
 
             }
@@ -95,20 +96,7 @@ public class HomeActivity extends AppCompatActivity {
         });
 
 
-        grid.setVerticalSpacing(60);
-        grid.setNumColumns(3);
-        grid.setColumnWidth(40);
 
-        grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent singleEvent = new Intent(getApplicationContext(), EventActivity.class);
-
-                singleEvent.putExtra("Profile picture", friendArrayList.get(position).getUserProfilePic());
-                singleEvent.putExtra("Name", friendArrayList.get(position).getUserName());
-                startActivity(singleEvent);
-            }
-        });
     }
 
     @Override

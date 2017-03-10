@@ -9,12 +9,14 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.gabrielemaffoni.toastapp.to.User;
+import com.gabrielemaffoni.toastapp.utils.Static;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
 
 /**
  * Created by gabrielemaffoni on 09/03/2017.
@@ -76,9 +78,9 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     private void writeNewUser(String name, String surname, String email, String password) {
         User user = new User(name, surname, email, password);
 
-        user.setUserId(db.push().getKey());
+        user.setUserId(firebaseAuth.getCurrentUser().getUid());
 
-        user.setUserProfilePic(User.AVATAR_STANDARD);
+        user.setUserProfilePic(Static.AVATAR_STANDARD);
 
         db.child("users").child(user.getUserId()).setValue(user);
 
