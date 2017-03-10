@@ -25,7 +25,7 @@ import java.util.Map;
 import static com.gabrielemaffoni.toastapp.utils.Static.*;
 
 /**
- * Created by gabrielemaffoni on 10/03/2017.
+ * TODO ADD JAVADOC COMMENTS
  */
 
 public class SearchUser extends AppCompatActivity {
@@ -45,6 +45,7 @@ public class SearchUser extends AppCompatActivity {
         db = FirebaseDatabase.getInstance().getReference().child(UDB);
 
         final String currentUserId = firebaseAuth.getCurrentUser().getUid();
+
         searchView = (SearchView) findViewById(R.id.userSearch);
         foundUserSection = (RelativeLayout) findViewById(R.id.foundUser);
 
@@ -54,9 +55,9 @@ public class SearchUser extends AppCompatActivity {
                 foundUserSection.setVisibility(View.VISIBLE);
                 userFoundName = (TextView) findViewById(R.id.nameUserFound);
 
-                Query query1 = db.orderByChild(UEMAIL).equalTo(searchView.getQuery().toString());
+                Query findFriendByEmail = db.orderByChild(UEMAIL).equalTo(searchView.getQuery().toString());
 
-                query1.addChildEventListener(new ChildEventListener() {
+                findFriendByEmail.addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                         HashMap<String, Object> users = (HashMap<String, Object>) dataSnapshot.getValue();
@@ -76,7 +77,7 @@ public class SearchUser extends AppCompatActivity {
                                 finalSurname,
                                 finalProfilePic
                         );
-                        addUserMethod(addUser, currentUserId, finalUserId, friend);
+                        addUserMethod(addUser, currentUserId, finalUserId, friend, db);
                     }
 
                     @Override
@@ -111,12 +112,61 @@ public class SearchUser extends AppCompatActivity {
 
     }
 
-    private void addUserMethod(Button addUser, final String userIdAdded, final String friendUserID, final Friend friendToAdd) {
+
+    private void addUserMethod(Button addUser, final String searcherId, final String userFound, final Friend friendToAdd, final DatabaseReference db) {
         addUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseReference database2 = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB);
-                database2.child(userIdAdded).child(friendUserID).setValue(friendToAdd);
+                final DatabaseReference dbToAddFriendIn = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB);
+                dbToAddFriendIn.child(searcherId).child(userFound).setValue(friendToAdd);
+
+
+                Query findCurrentUserToAdd = db.orderByKey().equalTo(searcherId);
+                findCurrentUserToAdd.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        HashMap<String, Object> searcher = (HashMap<String, Object>) dataSnapshot.getValue();
+
+                        String finalSearcherName = String.valueOf(searcher.get(UNAME));
+                        String finalSearcherSurname = String.valueOf(searcher.get(USURNAME));
+                        String finalSearcherId = String.valueOf(searcher.get(UID));
+                        int finalProfilePic = Integer.parseInt(
+                                String.valueOf(searcher.get(UPROFPIC))
+                        );
+
+                        Friend friendWhoSearched = new Friend(
+
+                                finalSearcherName,
+                                finalSearcherSurname,
+                                finalProfilePic
+                        );
+
+                        dbToAddFriendIn.child(userFound).child(searcherId).setValue(friendWhoSearched);
+
+
+                    }
+
+
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
                 finish();
                 Toast.makeText(getApplicationContext(), friendToAdd.getUserName() + " has been added", Toast.LENGTH_SHORT).show();
             }
