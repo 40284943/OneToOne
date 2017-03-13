@@ -37,4 +37,9 @@ public class Static {
     public final static String UDB = "users";
     public final static String FRIENDSDB = "friends";
     public final static String EVENTSDB = "events";
+
+    public static boolean IS_PRESSED = false;
+    public static int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+    public static String TAG = "Places";
+
 }

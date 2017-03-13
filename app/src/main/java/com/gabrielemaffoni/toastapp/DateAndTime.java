@@ -3,7 +3,6 @@ package com.gabrielemaffoni.toastapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -30,35 +29,39 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static com.gabrielemaffoni.toastapp.utils.Static.*;
+
+import static com.gabrielemaffoni.toastapp.utils.Static.BEER;
+import static com.gabrielemaffoni.toastapp.utils.Static.COCKTAIL;
+import static com.gabrielemaffoni.toastapp.utils.Static.COFFEE;
+import static com.gabrielemaffoni.toastapp.utils.Static.IS_PRESSED;
+import static com.gabrielemaffoni.toastapp.utils.Static.LUNCH;
+import static com.gabrielemaffoni.toastapp.utils.Static.PLACE_AUTOCOMPLETE_REQUEST_CODE;
+import static com.gabrielemaffoni.toastapp.utils.Static.TAG;
 
 /**
- *
  * TODO: Add time choices (!IMPORTANT)
  * TODO: Add data sharing with confirmation (!IMPORTANT)
  * TODO: Add code to set the event on the database (!IMPORTANT)
- *
- *
- *
  */
 
 public class DateAndTime extends Fragment {
-    public static boolean IS_PRESSED = false;
-    static int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
-    static String TAG = "Places";
+
+
     private TabLayout day;
     private TabLayout time;
     private Switch addLocation;
     private MapView mapView;
     private GoogleMap googleMap;
     private FloatingActionButton okay;
+
     private Event event;
+
+    private String selectedDay;
 
     public static DateAndTime newInstance() {
 
@@ -77,6 +80,9 @@ public class DateAndTime extends Fragment {
         final int type = args.getInt("Type");
 
 
+        event.setType(type);
+
+
         day = (TabLayout) rootView.findViewById(R.id.day);
         time = (TabLayout) rootView.findViewById(R.id.time);
         addLocation = (Switch) rootView.findViewById(R.id.add_location);
@@ -84,8 +90,9 @@ public class DateAndTime extends Fragment {
         mapView.onCreate(savedInstanceState);
         okay = (FloatingActionButton) rootView.findViewById(R.id.okay);
 
-        setTab(time, returnCurrentDate());
 
+        getCurrentSelectedDate(day);
+        setTimeTab(time);
 
         addLocation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -121,7 +128,6 @@ public class DateAndTime extends Fragment {
                 MapView mapPicked = (MapView) preConfirmation.findViewById(R.id.map_picked_conf);
                 Button done = (Button) preConfirmation.findViewById(R.id.done);
                 IS_PRESSED = true;
-
 
 
                 //Set the event image
@@ -181,16 +187,41 @@ public class DateAndTime extends Fragment {
     }
 
 
-    private String returnCurrentDate() {
-        Calendar today = Calendar.getInstance();
-        DateFormat formatter = new SimpleDateFormat("dd.mm.yyyy HH:mm");
+    private void getCurrentSelectedDate(TabLayout day) {
 
+        //Get current day
+        final Calendar currentDay = Calendar.getInstance();
+        //changing it to gregorian calendar to manage it easily
+        final GregorianCalendar today = new GregorianCalendar(
+                currentDay.get(Calendar.YEAR),
+                currentDay.get(Calendar.MONTH),
+                currentDay.get(Calendar.DAY_OF_MONTH)
+        );
 
-        String todayFormatted = formatter.format(today.getTime());
+        //Setting immediately at today
+        setDateEvent(today, day.getSelectedTabPosition());
 
-        return todayFormatted;
+        //Checking if there are changes on tab selecting
 
+        day.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                setDateEvent(today, tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                //Do nothing
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                //Do nothing
+            }
+        });
     }
+
 
     private int findRightImageResource(int type) {
         //Check which event it is
@@ -214,9 +245,26 @@ public class DateAndTime extends Fragment {
         return imageResource;
     }
 
-    private void setTab(TabLayout tabLayout, String textToTab) {
+
+    private void setDateEvent(GregorianCalendar today, int tabPosition) {
+        switch (tabPosition) {
+            case 0:
+                event.setWhen(today);
+                break;
+            case 1:
+                GregorianCalendar tomorrow = today;
+                tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+                event.setWhen(tomorrow);
+                break;
+            default:
+                event.setWhen(today);
+        }
+    }
+
+    private void setTimeTab(TabLayout tabLayout) {
         tabLayout.removeAllTabs();
-        tabLayout.addTab(tabLayout.newTab().setText(textToTab));
+
+
     }
 
 

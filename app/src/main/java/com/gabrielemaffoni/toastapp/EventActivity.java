@@ -12,9 +12,15 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.gabrielemaffoni.toastapp.to.Event;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Places;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+import static com.gabrielemaffoni.toastapp.utils.Static.*;
 
 /**
  * Created by gabrielemaffoni on 08/03/2017.
@@ -25,8 +31,7 @@ import com.google.android.gms.location.places.Places;
 
 public class EventActivity extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener {
     private static final int NUM_PAGES = 2;
-
-
+    public static Event event;
     private ViewPager viewPager;
     private PagerAdapter adapter;
     private GoogleApiClient mGoogleApiClient;
@@ -45,6 +50,7 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
                 .addApi(Places.PLACE_DETECTION_API)
                 .enableAutoManage(this, this)
                 .build();
+
 
         viewPager = (ViewPager) findViewById(R.id.cards);
         ImageView profilePicChosen = (ImageView) findViewById(R.id.profile_pic_chosen);
@@ -65,7 +71,7 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
     public void onBackPressed() {
 
         //The overridden method checks before if we are already at the end of the process of selecting all the appointments data
-        if (DateAndTime.IS_PRESSED) {
+        if (IS_PRESSED) {
 
         /*
         If so, it goes to the previous visualisation
@@ -73,7 +79,7 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
 
             View preConfirmation = findViewById(R.id.preconfirmation_layout);
             preConfirmation.setVisibility(View.GONE);
-            DateAndTime.IS_PRESSED = false;
+            IS_PRESSED = false;
 
         /*
         Otherwise its behaviours are normal.

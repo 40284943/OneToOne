@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import static com.gabrielemaffoni.toastapp.EventActivity.event;
 import static com.gabrielemaffoni.toastapp.utils.Static.*;
 
 
@@ -50,6 +51,8 @@ public class WhatCard extends Fragment {
                 DateAndTime when = new DateAndTime();
                 //Pass the type of event
                 Bundle args = new Bundle();
+
+
                 args.putInt("Type", BEER);
                 when.setArguments(args);
                 //start transaction
