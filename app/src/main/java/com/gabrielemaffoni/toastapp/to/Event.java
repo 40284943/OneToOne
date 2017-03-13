@@ -10,43 +10,48 @@ import java.util.GregorianCalendar;
 
 public class Event {
 
-
-    private int id_event;
     private Friend receiver;
-
     private GregorianCalendar when;
     private int active;
     private int hour;
     private int minute;
     private int type;
-    private String location;
-    private Place place;
+    private String location_name;
+    private String address;
+    private double lat;
+    private double lon;
 
 
     public Event() {
 
     }
 
-    public Event(int id_event, Friend receiver, GregorianCalendar when, int active, int type, Place place, int avatar) {
-        this.id_event = id_event;
+    public Event(Friend receiver, GregorianCalendar when, int active, int hour, int minute, int type, String location_name, String address, double lat, double lon) {
+        this.receiver = receiver;
+        this.when = when;
+        this.active = active;
+        this.hour = hour;
+        this.minute = minute;
+        this.type = type;
+        this.location_name = location_name;
+        this.address = address;
+        this.lat = lat;
+        this.lon = lon;
+    }
+
+    public Event(Friend receiver, GregorianCalendar when, int active, int type, Place place, int avatar) {
+
         this.receiver = receiver;
         this.when = when;
         this.active = active;
         this.type = type;
-        this.place = place;
+
     }
 
     public Event(Friend receiver) {
         this.receiver = receiver;
     }
 
-    public int getId_event() {
-        return id_event;
-    }
-
-    public void setId_event(int id_event) {
-        this.id_event = id_event;
-    }
 
     public Friend getReceiver() {
         return receiver;
@@ -96,20 +101,35 @@ public class Event {
         this.type = type;
     }
 
-    public String getLocation() {
-        return location;
+    public String getLocation_name() {
+        return location_name;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setLocation_name(String location_name) {
+        this.location_name = location_name;
     }
 
-
-    public Place getPlace() {
-        return place;
+    public String getAddress() {
+        return address;
     }
 
-    public void setPlace(Place place) {
-        this.place = place;
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    public void setLon(double lon) {
+        this.lon = lon;
     }
 }

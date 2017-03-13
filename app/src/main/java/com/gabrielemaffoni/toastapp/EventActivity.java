@@ -17,6 +17,9 @@ import com.gabrielemaffoni.toastapp.to.Friend;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Places;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import static com.gabrielemaffoni.toastapp.utils.Static.*;
 
@@ -37,12 +40,16 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
     private String nameInvited;
     private String surnameInvited;
     private String invitedId;
-
+    private FirebaseAuth firebaseAuth;
+    private DatabaseReference db;
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.single_event_layout);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        db = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
 
         event = new Event();
 

@@ -37,6 +37,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -48,6 +49,7 @@ import java.util.HashMap;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.TELECOM_SERVICE;
 import static com.gabrielemaffoni.toastapp.EventActivity.event;
 import static com.gabrielemaffoni.toastapp.utils.Static.*;
 
@@ -61,10 +63,12 @@ import static com.gabrielemaffoni.toastapp.utils.Static.*;
 public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedListener {
 
 
+
     private static String HALF_HOUR = "30";
     private static String TOTAL_HOUR = "00";
     DatabaseReference db;
     FirebaseAuth firebaseAuth;
+    private String currentUserId;
     private Spinner day;
     private Spinner time;
     private Switch addLocation;
@@ -78,6 +82,9 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
     private GregorianCalendar dayChosen;
     private TextView nameLocation;
     private TextView addressLocation;
+    private Friend receiver;
+
+    private Place place;
 
     //NEw instance to navigate through the adapterview
     public static DateAndTime newInstance(Bundle args) {
@@ -93,6 +100,13 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
         //Inflate the data in the adapterview
         final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.date_time_location_alt, container, false);
 
+        firebaseAuth = FirebaseAuth.getInstance();
+        db = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
+        currentUserId = firebaseAuth.getCurrentUser().getUid();
+
+        receiver = new Friend();
+        receiver.setUserId(event.getReceiver().getUserId());
+
         //get all the arguments from the previous fragment
         Bundle args = getArguments();
         final int type = args.getInt("type");
@@ -107,7 +121,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
 
         setWhere();
 
-        showPreconfirmationCard(type, okay);
+        showPreconfirmationCard(okay, savedInstanceState);
 
         return rootView;
     }
@@ -139,9 +153,11 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(this.getContext(), data);
-                event.setPlace(place);
-
+                place = PlaceAutocomplete.getPlace(this.getContext(), data);
+                event.setAddress(place.getAddress().toString());
+                event.setLocation_name(place.getName().toString());
+                event.setLat(place.getLatLng().latitude);
+                event.setLon(place.getLatLng().longitude);
                 //show the mapsection
                 LinearLayout mapSection = (LinearLayout) getView().findViewById(R.id.map_section);
                 mapSection.setVisibility(View.VISIBLE);
@@ -152,14 +168,14 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
                 mapView = (MapView) getView().findViewById(R.id.mapView);
 
                 //Copy the name and the location of the place
-                nameLocation.setText(event.getPlace().getName());
-                addressLocation.setText(event.getPlace().getAddress());
+                nameLocation.setText(place.getName());
+                addressLocation.setText(place.getAddress());
 
                 mapView.onCreate(getArguments());
                 mapView.getMapAsync(new OnMapReadyCallback() {
                     @Override
                     public void onMapReady(GoogleMap googleMap) {
-                        LatLng placePicked = event.getPlace().getLatLng();
+                        LatLng placePicked = place.getLatLng();
                         googleMap.addMarker(new MarkerOptions().position(placePicked));
                         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(placePicked, 20));
                     }
@@ -298,7 +314,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
         //Do nothing
     }
 
-    public void showPreconfirmationCard(final int type, FloatingActionButton button) {
+    public void showPreconfirmationCard(FloatingActionButton button, final Bundle savedInstanceState) {
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -318,21 +334,24 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
                 what.setImageResource(findRightImageResource(event.getType()));
                 receiverProfilePic.setImageResource(event.getReceiver().getUserProfilePic());
                 date.setText(selectedDay);
-                time.setText(event.getWhen().get(Calendar.HOUR_OF_DAY) + ":" + event.getWhen().get(Calendar.MINUTE));
+                time.setText(event.getWhen().get(Calendar.HOUR) + ":" + event.getWhen().get(Calendar.MINUTE));
 
+                try {
 
-                if (event.getPlace().getAddress() != null) {
-                    where.setText(event.getPlace().getName());
-                    whereAddress.setText(event.getPlace().getAddress());
+                    where.setText(event.getLocation_name());
+                    whereAddress.setText(event.getAddress());
+
+                    mapPicked.onCreate(savedInstanceState);
                     mapPicked.getMapAsync(new OnMapReadyCallback() {
                         @Override
                         public void onMapReady(GoogleMap googleMap) {
-                            LatLng finalPlace = event.getPlace().getLatLng();
+                            LatLng finalPlace = new LatLng(event.getLat(), event.getLon());
                             googleMap.addMarker(new MarkerOptions().position(finalPlace));
                             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(finalPlace, 200));
                         }
                     });
-                } else {
+
+                } catch (NullPointerException e) {
                     CardView mapIf = (CardView) preConfirmation.findViewById(R.id.where_map);
                     mapIf.setVisibility(View.INVISIBLE);
                 }
@@ -358,18 +377,23 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
 
 
     private void setDatabaseUser() {
-        firebaseAuth = FirebaseAuth.getInstance();
-        db = FirebaseDatabase.getInstance().getReference().child(UID);
 
+        //add the person invited to the database
+        event.setActive(MAYBE);
 
-        final String currentUserId = firebaseAuth.getCurrentUser().getUid();
+        try {
+            db.child(currentUserId).child(receiver.getUserId()).setValue(event);
+        } catch (DatabaseException e) {
 
-        db.getParent().child(EVENTSDB).child(currentUserId).child(event.getReceiver().getUserId()).setValue(event);
+        }
+        //now the opposite, to add to the database of the person who invites the event
         final Event eventOpposite = event;
 
-        final DatabaseReference dbToAddFriendIn = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
 
-        Query findCurrentUserToAdd = db.orderByKey().equalTo(currentUserId);
+        DatabaseReference usersDatabase = FirebaseDatabase.getInstance().getReference().child(UDB);
+
+
+        Query findCurrentUserToAdd = usersDatabase.orderByKey().equalTo(currentUserId);
         findCurrentUserToAdd.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -390,7 +414,8 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
                 );
                 eventOpposite.setReceiver(friendWhoSearched);
 
-                dbToAddFriendIn.child(event.getReceiver().getUserId()).child(eventOpposite.getReceiver().getUserId()).setValue(eventOpposite);
+                db.child(event.getReceiver().getUserId()).child(currentUserId).setValue(eventOpposite);
+                Toast.makeText(getContext().getApplicationContext(), "Event created", Toast.LENGTH_SHORT).show();
                 getActivity().finish();
             }
 

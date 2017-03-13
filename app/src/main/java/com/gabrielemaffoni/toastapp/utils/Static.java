@@ -49,6 +49,9 @@ public class Static {
     public static final String ADD_USER = "Add user";
     public static final String LOGOUT = "Logout";
     public static final String USER_ID = "user_id";
+    public static final int MAYBE = 3;
+    public static final int ACCEPTED = 1;
+    public static final int REFUSED = 0;
     public static boolean IS_PRESSED = false;
     public static int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     public static String TAG = "Places";

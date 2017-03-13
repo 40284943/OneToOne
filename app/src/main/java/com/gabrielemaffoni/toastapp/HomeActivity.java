@@ -113,6 +113,7 @@ public class HomeActivity extends AppCompatActivity {
                 friendArrayList.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Friend friend = postSnapshot.getValue(Friend.class);
+                    friend.setUserId(dataSnapshot.getKey());
                     friendArrayList.add(friend);
                 }
                 FriendsAdapter adapter = new FriendsAdapter(getApplicationContext(), friendArrayList);
