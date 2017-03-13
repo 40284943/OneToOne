@@ -1,9 +1,14 @@
 package com.gabrielemaffoni.toastapp;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
+
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,30 +39,28 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+
 import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
+
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
+
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static android.content.Context.TELECOM_SERVICE;
+
 import static com.gabrielemaffoni.toastapp.EventActivity.event;
 import static com.gabrielemaffoni.toastapp.utils.Static.*;
 
 
 /**
  *
- * TODO: Add data sharing with confirmation (!IMPORTANT)
- * TODO: Add code to set the event on the database (!IMPORTANT)
+ *
+ *
  */
 
 public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedListener {
@@ -66,8 +69,8 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
 
     private static String HALF_HOUR = "30";
     private static String TOTAL_HOUR = "00";
-    DatabaseReference db;
-    FirebaseAuth firebaseAuth;
+    private DatabaseReference db;
+    private FirebaseAuth firebaseAuth;
     private String currentUserId;
     private Spinner day;
     private Spinner time;
@@ -104,9 +107,9 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
         db = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
         currentUserId = firebaseAuth.getCurrentUser().getUid();
 
+
         receiver = new Friend();
         receiver.setUserId(event.getReceiver().getUserId());
-
         //get all the arguments from the previous fragment
         Bundle args = getArguments();
         final int type = args.getInt("type");
@@ -360,9 +363,10 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
                 preConfirmation.setVisibility(View.VISIBLE);
 
                 done.setOnClickListener(new View.OnClickListener() {
+
                     @Override
                     public void onClick(View v) {
-
+                        event.setActive(MAYBE);
                         setDatabaseUser();
                     }
 
@@ -379,20 +383,20 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
     private void setDatabaseUser() {
 
         //add the person invited to the database
-        event.setActive(MAYBE);
 
         try {
-            db.child(currentUserId).child(receiver.getUserId()).setValue(event);
+            db.child(currentUserId).child(event.getReceiver().getUserId()).setValue(event);
         } catch (DatabaseException e) {
 
         }
-        //now the opposite, to add to the database of the person who invites the event
-        final Event eventOpposite = event;
 
+       /* //now the opposite, to add to the database of the person who invites the event
+        final Event eventOpposite = new Event();
+        eventOpposite.copyEvent(event);
 
         DatabaseReference usersDatabase = FirebaseDatabase.getInstance().getReference().child(UDB);
 
-
+        //we search the data of the current user in our database
         Query findCurrentUserToAdd = usersDatabase.orderByKey().equalTo(currentUserId);
         findCurrentUserToAdd.addChildEventListener(new ChildEventListener() {
             @Override
@@ -412,15 +416,19 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
                         finalSearcherSurname,
                         finalProfilePic
                 );
+
                 eventOpposite.setReceiver(friendWhoSearched);
 
-                db.child(event.getReceiver().getUserId()).child(currentUserId).setValue(eventOpposite);
+                DatabaseReference databaseToAddTheOpposite = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
+                databaseToAddTheOpposite.child(event.getReceiver().getUserId()).child(currentUserId).setValue(eventOpposite);*/
                 Toast.makeText(getContext().getApplicationContext(), "Event created", Toast.LENGTH_SHORT).show();
+
+        // sendNotification(eventOpposite, event);
                 getActivity().finish();
             }
 
 
-            @Override
+         /*   @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
             }
@@ -438,10 +446,10 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
-            }
+            }*/
 
-        });
-    }
+    //});
+    //}
 
     private int findRightImageResource(int type) {
         //Check which event it is
@@ -463,6 +471,37 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
         }
 
         return imageResource;
+    }
+
+    private void sendNotification(Event eventopposite, Event event) {
+        String type = "";
+
+        switch (event.getType()) {
+            case BEER:
+                type = "beer";
+                break;
+            case COCKTAIL:
+                type = "cocktail";
+                break;
+            case LUNCH:
+                type = "lunch";
+                break;
+            case COFFEE:
+                type = "coffee";
+                break;
+        }
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(this.getContext())
+                .setSmallIcon(R.drawable.cast_ic_notification_small_icon)
+                .setContentTitle(eventopposite.getReceiver().getUserName() + " " + eventopposite.getReceiver().getUserName())
+                .setContentText("Hey " + event.getReceiver().getUserName() + "! Wanna have a " + type + "?");
+
+        Intent notificationIntent = new Intent(this.getContext(), HomeActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this.getContext(), 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        notification.setContentIntent(contentIntent);
+
+        //Add as notification
+        NotificationManager manager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(0, notification.build());
     }
 }
 

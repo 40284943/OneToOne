@@ -48,8 +48,6 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.single_event_layout);
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        db = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
 
         event = new Event();
 

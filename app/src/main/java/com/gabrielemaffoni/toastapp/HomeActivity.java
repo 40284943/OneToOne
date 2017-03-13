@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -33,6 +34,7 @@ public class HomeActivity extends AppCompatActivity {
     final ArrayList<Friend> friendArrayList = new ArrayList<>();
     DatabaseReference friendsDatabase;
     private FirebaseAuth firebaseAuth;
+    private String cUID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +50,8 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(startApp);
         }
 
-        String currentUserId = firebaseAuth.getCurrentUser().getUid();
-        friendsDatabase = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB).child(currentUserId);
+        cUID = firebaseAuth.getCurrentUser().getUid();
+        friendsDatabase = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB).child(cUID);
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -85,6 +87,8 @@ public class HomeActivity extends AppCompatActivity {
                 friendArrayList.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Friend friend = postSnapshot.getValue(Friend.class);
+                    friend.setUserId(postSnapshot.getKey());
+
                     friendArrayList.add(friend);
                 }
                 FriendsAdapter adapter = new FriendsAdapter(getApplicationContext(), friendArrayList);
@@ -113,9 +117,11 @@ public class HomeActivity extends AppCompatActivity {
                 friendArrayList.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Friend friend = postSnapshot.getValue(Friend.class);
-                    friend.setUserId(dataSnapshot.getKey());
+                    friend.setUserId(postSnapshot.getKey());
+
                     friendArrayList.add(friend);
                 }
+
                 FriendsAdapter adapter = new FriendsAdapter(getApplicationContext(), friendArrayList);
                 GridView grid = (GridView) findViewById(R.id.friends_list);
 
@@ -141,6 +147,7 @@ public class HomeActivity extends AppCompatActivity {
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 Intent singleEvent = new Intent(getApplicationContext(), EventActivity.class);
 
                 singleEvent.putExtra("profile_picture", friendArrayList.get(position).getUserProfilePic());

@@ -132,4 +132,14 @@ public class Event {
     public void setLon(double lon) {
         this.lon = lon;
     }
+
+    public void copyEvent(Event newEvent) {
+        newEvent.setReceiver(this.receiver);
+        newEvent.setLat(this.lat);
+        newEvent.setLon(this.lon);
+        newEvent.setWhen(this.when);
+        newEvent.setType(this.type);
+        newEvent.setLocation_name(this.location_name);
+        newEvent.setAddress(this.address);
+    }
 }
