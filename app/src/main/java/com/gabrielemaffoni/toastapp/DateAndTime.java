@@ -40,14 +40,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -390,7 +395,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
 
         }
 
-       /* //now the opposite, to add to the database of the person who invites the event
+        //now the opposite, to add to the database of the person who invites the event
         final Event eventOpposite = new Event();
         eventOpposite.copyEvent(event);
 
@@ -420,15 +425,15 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
                 eventOpposite.setReceiver(friendWhoSearched);
 
                 DatabaseReference databaseToAddTheOpposite = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
-                databaseToAddTheOpposite.child(event.getReceiver().getUserId()).child(currentUserId).setValue(eventOpposite);*/
+                databaseToAddTheOpposite.child(event.getReceiver().getUserId()).child(currentUserId).setValue(eventOpposite);
                 Toast.makeText(getContext().getApplicationContext(), "Event created", Toast.LENGTH_SHORT).show();
 
-        // sendNotification(eventOpposite, event);
+                sendNotification(eventOpposite, event);
                 getActivity().finish();
             }
 
 
-         /*   @Override
+            @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
             }
@@ -446,10 +451,10 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
-            }*/
+            }
 
-    //});
-    //}
+        });
+    }
 
     private int findRightImageResource(int type) {
         //Check which event it is
