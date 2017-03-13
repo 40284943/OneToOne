@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="day_dropdown">
+        <item>@string/today</item>
+        <item>@string/tomorrow</item>
+    </string-array>
+
+    <string-array name="when">
+        <item>@string/morning</item>
+
+        <item>@string/half_morning</item>
+        <item>@string/lunch</item>
+        <item>@string/after_lunch</item>
+        <item>@string/afternoon</item>
+        <item>@string/before_dinner</item>
+        <item>@string/dinner</item>
+        <item>@string/after_dinner</item>
+    </string-array>
+</resources>

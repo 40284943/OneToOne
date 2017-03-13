@@ -17,9 +17,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Places;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import static com.gabrielemaffoni.toastapp.utils.Static.*;
 
 /**

@@ -25,6 +25,7 @@
     <string name="dinner">Dinner</string>
     <string name="after_dinner">After dinner</string>
     <string name="sorry_tomorrow">You can\'t for today. What about tomorrow?</string>
+    <string name="at">at</string>
 
     <string name="with">With</string>
     <string name="location_chosen">Location</string>
@@ -33,6 +34,7 @@
     <string name="time">Time</string>
     <string name="button_done">Send invite</string>
     <string name="title_activity_settings">Settings</string>
+
 
     <!-- Strings related to Settings -->
 

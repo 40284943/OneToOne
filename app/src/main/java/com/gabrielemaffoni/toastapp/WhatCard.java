@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import static com.gabrielemaffoni.toastapp.EventActivity.event;
 import static com.gabrielemaffoni.toastapp.utils.Static.*;
 
 

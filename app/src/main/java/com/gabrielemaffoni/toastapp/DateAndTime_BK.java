@@ -3,19 +3,16 @@ package com.gabrielemaffoni.toastapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -32,15 +29,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+
 import static com.gabrielemaffoni.toastapp.utils.Static.BEER;
 import static com.gabrielemaffoni.toastapp.utils.Static.COCKTAIL;
 import static com.gabrielemaffoni.toastapp.utils.Static.COFFEE;
@@ -55,28 +46,26 @@ import static com.gabrielemaffoni.toastapp.utils.Static.TAG;
  * TODO: Add code to set the event on the database (!IMPORTANT)
  */
 
-public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedListener {
+public class DateAndTime_BK extends Fragment {
 
 
     private static String HALF_HOUR = "30";
     private static String TOTAL_HOUR = "00";
-    private Spinner day;
-    private Spinner time;
+    private TabLayout day;
+    private TabLayout time;
     private Switch addLocation;
     private MapView mapView;
     private GoogleMap googleMap;
     private FloatingActionButton okay;
     private Event event;
-    private Calendar currentDay;
-    private String selectedDay;
-    private GregorianCalendar todayCal;
-    private GregorianCalendar dayChosen;
 
-    public static DateAndTime newInstance() {
+    private String selectedDay;
+
+    public static DateAndTime_BK newInstance() {
 
         Bundle args = new Bundle();
 
-        DateAndTime fragment = new DateAndTime();
+        DateAndTime_BK fragment = new DateAndTime_BK();
         fragment.setArguments(args);
         return fragment;
     }
@@ -84,7 +73,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
-        final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.date_time_location_alt, container, false);
+        final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.date_time_location, container, false);
         Bundle args = getArguments();
         final int type = args.getInt("Type");
 
@@ -92,17 +81,17 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
         event.setType(type);
 
 
-        day = (Spinner) rootView.findViewById(R.id.day_spinner);
-        time = (Spinner) rootView.findViewById(R.id.time_spinner);
+        day = (TabLayout) rootView.findViewById(R.id.day);
+        time = (TabLayout) rootView.findViewById(R.id.time);
         addLocation = (Switch) rootView.findViewById(R.id.add_location);
         mapView = (MapView) rootView.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         okay = (FloatingActionButton) rootView.findViewById(R.id.okay);
 
 
-        getCurrentSelectedDate(day, time);
+// getCurrentSelectedDate(day, time);
 
-        event.setWhen(dayChosen);
+
         addLocation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -196,69 +185,89 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
     }
 
 
-    private void getCurrentSelectedDate(Spinner day, final Spinner time) {
+   /* private void getCurrentSelectedDate(TabLayout day, final TabLayout time) {
 
         //Get current day
-        currentDay = Calendar.getInstance();
+        final Calendar currentDay = Calendar.getInstance();
         //changing it to gregorian calendar to manage it easily
-        todayCal = new GregorianCalendar(
+        final GregorianCalendar today = new GregorianCalendar(
                 currentDay.get(Calendar.YEAR),
                 currentDay.get(Calendar.MONTH),
                 currentDay.get(Calendar.DAY_OF_MONTH)
         );
 
 
-        event.setWhen(todayCal);
-        setTimeFromNow(time, currentDay);
+        //Setting immediately at today
+        setDateEvent(time, today, day.getSelectedTabPosition());
 
         //Checking if there are changes on tab selecting
-        day.setOnItemSelectedListener(this);
-        time.setOnItemSelectedListener(this);
 
+        day.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                setDateEvent(time, today, tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                //Do nothing
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                //Do nothing
+            }
+        });
     }
 
 
-    private void setTimeFromNow(Spinner timeList, Calendar calendar) {
+    private void setDateEvent(TabLayout timeTab, GregorianCalendar today, int tabPosition) {
+        Calendar now = Calendar.getInstance();
 
+        switch (tabPosition) {
+            case 0:
+                event.setWhen(today);
+                setTimeFromNow(timeTab, now);
+                break;
+            case 1:
+                GregorianCalendar tomorrow = today;
+                tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+                event.setWhen(tomorrow);
+                setTimeForTomorrow(timeTab);
+
+                break;
+            default:
+                event.setWhen(today);
+                setTimeFromNow(timeTab, today);
+        }
+    }
+
+
+    private void setTimeFromNow(TabLayout tabLayout, Calendar calendar) {
 
         int now = calendar.get(Calendar.HOUR_OF_DAY);
-
-        ArrayList<String> timeFromNow = new ArrayList<>();
-
+        tabLayout.removeAllTabs();
+        Toast.makeText(getContext(), Integer.toString(now), Toast.LENGTH_SHORT).show();
         if (now < 22) {
 
             for (int i = now; i < 24; i++) {
-                timeFromNow.add(i + ":" + HALF_HOUR);
-                timeFromNow.add(i + ":" + TOTAL_HOUR);
+                tabLayout.addTab(tabLayout.newTab().setText(i + ":" + HALF_HOUR));
+                tabLayout.addTab(tabLayout.newTab().setText(i + ":" + TOTAL_HOUR));
             }
         } else {
-            timeFromNow.add(getContext().getString(R.string.sorry_tomorrow));
+            tabLayout.addTab(tabLayout.newTab().setText("Sorry, too late for today. Try tomorrow."));
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext().getApplicationContext(), android.R.layout.simple_spinner_item, timeFromNow);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dayChosen = todayCal;
-        timeList.setAdapter(adapter);
-
     }
 
-    private void setTimeForTomorrow(Spinner timeList) {
-        ArrayList<String> timeForTomorrow = new ArrayList<>();
-
+    private void setTimeForTomorrow(TabLayout tabLayout) {
+        tabLayout.removeAllTabs();
         for (int i = 0; i < 24; i++) {
-            timeForTomorrow.add(i + ":" + HALF_HOUR);
-            timeForTomorrow.add(i + ":" + TOTAL_HOUR);
+            tabLayout.addTab(tabLayout.newTab().setText(i + ":" + HALF_HOUR));
+            tabLayout.addTab(tabLayout.newTab().setText(i + ":" + TOTAL_HOUR));
         }
-        GregorianCalendar tomorrowCal = new GregorianCalendar();
-        tomorrowCal = todayCal;
-        tomorrowCal.add(Calendar.DAY_OF_MONTH, 1);
-
-        event.setWhen(tomorrowCal);
-        dayChosen = tomorrowCal;
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext().getApplicationContext(), android.R.layout.simple_spinner_item, timeForTomorrow);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        timeList.setAdapter(adapter);
     }
-
+*/
 
     private int findRightImageResource(int type) {
         //Check which event it is
@@ -282,35 +291,5 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
         return imageResource;
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        Spinner spinner = (Spinner) parent;
-
-
-        if (spinner.getId() == R.id.day_spinner) {
-            switch (parent.getSelectedItemPosition()) {
-                case 0:
-                    setTimeFromNow(spinner, currentDay);
-                    break;
-                case 1:
-                    setTimeForTomorrow(spinner);
-                    break;
-                default:
-                    setTimeFromNow(spinner, currentDay);
-                    break;
-            }
-        } else {
-            String timeChosen = spinner.getSelectedItem().toString();
-
-            dayChosen.set(Calendar.HOUR_OF_DAY, Integer.valueOf(timeChosen.substring(0, 2).toString()));
-            dayChosen.set(Calendar.MINUTE, Integer.valueOf(timeChosen.substring(3)));
-        }
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        //Do nothing
-    }
 
 }
