@@ -135,7 +135,7 @@ public class SearchUser extends AppCompatActivity {
                         );
 
                         Friend friendWhoSearched = new Friend(
-
+                                finalSearcherId,
                                 finalSearcherName,
                                 finalSearcherSurname,
                                 finalProfilePic

@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gabrielemaffoni.toastapp.to.Event;
+import com.gabrielemaffoni.toastapp.to.Friend;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Places;
@@ -32,6 +33,10 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
     private ViewPager viewPager;
     private PagerAdapter adapter;
     private GoogleApiClient mGoogleApiClient;
+    private int profilePic;
+    private String nameInvited;
+    private String surnameInvited;
+    private String invitedId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,9 +44,23 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.single_event_layout);
 
+        event = new Event();
+
+        //get the name and the cover image of the person chosen
         Bundle previousIntent = getIntent().getExtras();
-        int coverImage = previousIntent.getInt("Profile picture");
-        String nameInvited = previousIntent.getString("Name");
+        Friend receiver = new Friend(
+                previousIntent.getString("user_id"),
+                previousIntent.getString("name"),
+                previousIntent.getString("surname"),
+                previousIntent.getInt("profile_picture")
+        );
+        profilePic = receiver.getUserProfilePic();
+        nameInvited = receiver.getUserName();
+        surnameInvited = receiver.getUserSurname();
+        invitedId = receiver.getUserId();
+
+        event.setReceiver(receiver);
+
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Places.GEO_DATA_API)
                 .addApi(Places.PLACE_DETECTION_API)
@@ -52,7 +71,7 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
         viewPager = (ViewPager) findViewById(R.id.cards);
         ImageView profilePicChosen = (ImageView) findViewById(R.id.profile_pic_chosen);
         TextView nameChosen = (TextView) findViewById(R.id.name_invited);
-        profilePicChosen.setImageResource(coverImage);
+        profilePicChosen.setImageResource(profilePic);
         nameChosen.setText(nameInvited);
         adapter = new Adapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
@@ -105,13 +124,22 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return WhatCard.newInstance();
+                    Bundle argsEvent = new Bundle();
+                    argsEvent.putInt("receiver_profile_pic", profilePic);
+                    argsEvent.putString("receiver_name", nameInvited);
+                    argsEvent.putString("receiver_surname", surnameInvited);
+                    return WhatCard.newInstance(argsEvent);
 
                 case 1:
-                    return DateAndTime.newInstance();
+                    Bundle argsDateAndTime = new Bundle();
+                    return DateAndTime.newInstance(argsDateAndTime);
 
                 default:
-                    return WhatCard.newInstance();
+                    Bundle args = new Bundle();
+                    args.putInt("receiver_profile_pic", profilePic);
+                    args.putString("receiver_name", nameInvited);
+                    args.putString("receiver_surname", surnameInvited);
+                    return WhatCard.newInstance(args);
             }
 
         }

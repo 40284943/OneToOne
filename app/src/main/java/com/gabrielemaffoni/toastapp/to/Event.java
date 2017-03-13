@@ -1,5 +1,7 @@
 package com.gabrielemaffoni.toastapp.to;
 
+import com.google.android.gms.location.places.Place;
+
 import java.util.GregorianCalendar;
 
 /**
@@ -18,20 +20,24 @@ public class Event {
     private int minute;
     private int type;
     private String location;
+    private Place place;
+
 
     public Event() {
 
     }
 
-    public Event(int id_event, Friend receiver, GregorianCalendar when, int active, int hour, int minute, int type, String location) {
+    public Event(int id_event, Friend receiver, GregorianCalendar when, int active, int type, Place place, int avatar) {
         this.id_event = id_event;
         this.receiver = receiver;
         this.when = when;
         this.active = active;
-        this.hour = hour;
-        this.minute = minute;
         this.type = type;
-        this.location = location;
+        this.place = place;
+    }
+
+    public Event(Friend receiver) {
+        this.receiver = receiver;
     }
 
     public int getId_event() {
@@ -96,5 +102,14 @@ public class Event {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+
+    public Place getPlace() {
+        return place;
+    }
+
+    public void setPlace(Place place) {
+        this.place = place;
     }
 }

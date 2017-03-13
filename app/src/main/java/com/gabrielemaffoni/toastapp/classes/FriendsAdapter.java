@@ -52,13 +52,12 @@ public class FriendsAdapter extends ArrayAdapter<Friend> {
 
         TextView name = (TextView) convertView.findViewById(R.id.name);
         TextView surname = (TextView) convertView.findViewById(R.id.surname);
+        TextView userId = (TextView) convertView.findViewById(R.id.userIdHidden);
         ImageView avatar = (ImageView) convertView.findViewById(R.id.profile_pic);
 
 
         name.setText(friend.getUserName());
         surname.setText(friend.getUserSurname());
-
-
         avatar.setImageResource(friend.getUserProfilePic());
 
 

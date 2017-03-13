@@ -3,6 +3,7 @@
     <string-array name="day_dropdown">
         <item>@string/today</item>
         <item>@string/tomorrow</item>
+
     </string-array>
 
     <string-array name="when">

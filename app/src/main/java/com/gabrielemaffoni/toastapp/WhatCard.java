@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import static com.gabrielemaffoni.toastapp.EventActivity.event;
 import static com.gabrielemaffoni.toastapp.utils.Static.*;
 
 
@@ -22,9 +23,7 @@ public class WhatCard extends Fragment {
     private ImageView coffee;
     private ImageView lunch;
 
-    public static WhatCard newInstance() {
-
-        Bundle args = new Bundle();
+    public static WhatCard newInstance(Bundle args) {
 
         WhatCard fragment = new WhatCard();
         fragment.setArguments(args);
@@ -32,7 +31,7 @@ public class WhatCard extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceSatate) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.what_card, container, false);
         beer = (ImageView) rootView.findViewById(R.id.beer);
         cocktail = (ImageView) rootView.findViewById(R.id.cocktail);
@@ -48,15 +47,15 @@ public class WhatCard extends Fragment {
             @Override
             public void onClick(View v) {
                 DateAndTime when = new DateAndTime();
-                //Pass the type of event
-                Bundle args = new Bundle();
 
-
-                args.putInt("Type", BEER);
+                //Pass the type of event and the data of the participant
+                Bundle args = getArguments();
+                args.putInt("type", BEER);
+                event.setType(BEER);
                 when.setArguments(args);
+
                 //start transaction
                 FragmentTransaction manager = getFragmentManager().beginTransaction();
-                manager.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, R.anim.slide_in_right, R.anim.slide_out_left);//FIXME animations don't work properly. Check it out!
                 manager.replace(R.id.what_card, when);
                 manager.addToBackStack("Transaction1");
                 manager.commit();

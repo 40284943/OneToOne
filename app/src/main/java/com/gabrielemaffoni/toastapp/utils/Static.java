@@ -46,9 +46,10 @@ public class Static {
     public final static String UDB = "users";
     public final static String FRIENDSDB = "friends";
     public final static String EVENTSDB = "events";
-
+    public static final String ADD_USER = "Add user";
+    public static final String LOGOUT = "Logout";
+    public static final String USER_ID = "user_id";
     public static boolean IS_PRESSED = false;
     public static int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     public static String TAG = "Places";
-
 }

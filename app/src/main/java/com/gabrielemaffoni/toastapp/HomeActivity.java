@@ -21,17 +21,15 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import static com.gabrielemaffoni.toastapp.utils.Static.*;
+
 //TODO add notifications (check onChildChanged - or similar) (!IMPORTANT)
 //TODO Add personal settings(!IMPORTANT)
 //TODO Add possibility to delete friend (!IMPORTANT)
 //TODO Add possibility to change avatar (< IMPORTANT)
 public class HomeActivity extends AppCompatActivity {
 
-    public static final String USER_DB_NAME = "users";
-    public static final String FRIENDS_DB_NAME = "friends";
-    public static final String USER_ID = "user_id";
-    public static final String ADD_USER = "Add user";
-    public static final String LOGOUT = "Logout";
+
     final ArrayList<Friend> friendArrayList = new ArrayList<>();
     DatabaseReference friendsDatabase;
     private FirebaseAuth firebaseAuth;
@@ -51,7 +49,7 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         String currentUserId = firebaseAuth.getCurrentUser().getUid();
-        friendsDatabase = FirebaseDatabase.getInstance().getReference().child(FRIENDS_DB_NAME).child(currentUserId);
+        friendsDatabase = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB).child(currentUserId);
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -144,8 +142,11 @@ public class HomeActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent singleEvent = new Intent(getApplicationContext(), EventActivity.class);
 
-                singleEvent.putExtra("Profile picture", friendArrayList.get(position).getUserProfilePic());
-                singleEvent.putExtra("Name", friendArrayList.get(position).getUserName());
+                singleEvent.putExtra("profile_picture", friendArrayList.get(position).getUserProfilePic());
+                singleEvent.putExtra("name", friendArrayList.get(position).getUserName());
+                singleEvent.putExtra("surname", friendArrayList.get(position).getUserSurname());
+                singleEvent.putExtra("user_id", friendArrayList.get(position).getUserId());
+
                 startActivity(singleEvent);
             }
         });
