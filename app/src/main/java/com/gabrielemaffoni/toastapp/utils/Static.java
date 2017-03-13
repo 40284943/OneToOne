@@ -18,6 +18,15 @@ public class Static {
     public static final int COFFEE = 3;
     public static final int LUNCH = 4;
 
+    public static final String BREAKFAST = "Breakfast";
+    public static final String HALF_MORNING = "Half morning";
+    public static final String LUNCH_TIME = "Lunch";
+    public static final String AFTERNOON_BREAK = "Afternoon";
+    public static final String PRE_DINNER = "Before dinner";
+    public static final String DINNER = "Dinner";
+    public static final String AFTER_DINNER = "After dinner";
+
+
 
     public final static String EACTIVE = "active";
     public final static String EWHEN = "when";

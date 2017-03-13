@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gabrielemaffoni.toastapp.to.Event;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -52,13 +53,14 @@ import static com.gabrielemaffoni.toastapp.utils.Static.TAG;
 public class DateAndTime extends Fragment {
 
 
+    private static String HALF_HOUR = "30";
+    private static String TOTAL_HOUR = "00";
     private TabLayout day;
     private TabLayout time;
     private Switch addLocation;
     private MapView mapView;
     private GoogleMap googleMap;
     private FloatingActionButton okay;
-
     private Event event;
 
     private String selectedDay;
@@ -79,7 +81,7 @@ public class DateAndTime extends Fragment {
         Bundle args = getArguments();
         final int type = args.getInt("Type");
 
-
+        event = new Event();
         event.setType(type);
 
 
@@ -91,8 +93,8 @@ public class DateAndTime extends Fragment {
         okay = (FloatingActionButton) rootView.findViewById(R.id.okay);
 
 
-        getCurrentSelectedDate(day);
-        setTimeTab(time);
+        getCurrentSelectedDate(day, time);
+
 
         addLocation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -187,7 +189,7 @@ public class DateAndTime extends Fragment {
     }
 
 
-    private void getCurrentSelectedDate(TabLayout day) {
+    private void getCurrentSelectedDate(TabLayout day, final TabLayout time) {
 
         //Get current day
         final Calendar currentDay = Calendar.getInstance();
@@ -198,8 +200,9 @@ public class DateAndTime extends Fragment {
                 currentDay.get(Calendar.DAY_OF_MONTH)
         );
 
+
         //Setting immediately at today
-        setDateEvent(today, day.getSelectedTabPosition());
+        setDateEvent(time, today, day.getSelectedTabPosition());
 
         //Checking if there are changes on tab selecting
 
@@ -207,7 +210,7 @@ public class DateAndTime extends Fragment {
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                setDateEvent(today, tab.getPosition());
+                setDateEvent(time, today, tab.getPosition());
             }
 
             @Override
@@ -220,6 +223,53 @@ public class DateAndTime extends Fragment {
                 //Do nothing
             }
         });
+    }
+
+
+    private void setDateEvent(TabLayout timeTab, GregorianCalendar today, int tabPosition) {
+        Calendar now = Calendar.getInstance();
+
+        switch (tabPosition) {
+            case 0:
+                event.setWhen(today);
+                setTimeFromNow(timeTab, now);
+                break;
+            case 1:
+                GregorianCalendar tomorrow = today;
+                tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+                event.setWhen(tomorrow);
+                setTimeForTomorrow(timeTab);
+
+                break;
+            default:
+                event.setWhen(today);
+                setTimeFromNow(timeTab, today);
+        }
+    }
+
+
+    private void setTimeFromNow(TabLayout tabLayout, Calendar calendar) {
+
+        int now = calendar.get(Calendar.HOUR_OF_DAY);
+        tabLayout.removeAllTabs();
+        Toast.makeText(getContext(), Integer.toString(now), Toast.LENGTH_SHORT).show();
+        if (now < 22) {
+
+            for (int i = now; i < 24; i++) {
+                tabLayout.addTab(tabLayout.newTab().setText(i + ":" + HALF_HOUR));
+                tabLayout.addTab(tabLayout.newTab().setText(i + ":" + TOTAL_HOUR));
+            }
+        } else {
+            tabLayout.addTab(tabLayout.newTab().setText("Sorry, too late for today. Try tomorrow."));
+        }
+    }
+
+    private void setTimeForTomorrow(TabLayout tabLayout) {
+        tabLayout.removeAllTabs();
+        for (int i = 0; i < 24; i++) {
+            tabLayout.addTab(tabLayout.newTab().setText(i + ":" + HALF_HOUR));
+            tabLayout.addTab(tabLayout.newTab().setText(i + ":" + TOTAL_HOUR));
+        }
     }
 
 
@@ -243,28 +293,6 @@ public class DateAndTime extends Fragment {
         }
 
         return imageResource;
-    }
-
-
-    private void setDateEvent(GregorianCalendar today, int tabPosition) {
-        switch (tabPosition) {
-            case 0:
-                event.setWhen(today);
-                break;
-            case 1:
-                GregorianCalendar tomorrow = today;
-                tomorrow.add(Calendar.DAY_OF_MONTH, 1);
-                event.setWhen(tomorrow);
-                break;
-            default:
-                event.setWhen(today);
-        }
-    }
-
-    private void setTimeTab(TabLayout tabLayout) {
-        tabLayout.removeAllTabs();
-
-
     }
 
 
