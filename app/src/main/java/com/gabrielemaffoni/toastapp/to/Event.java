@@ -142,4 +142,29 @@ public class Event {
         newEvent.setLocation_name(this.location_name);
         newEvent.setAddress(this.address);
     }
+
+    public void copyToEventExceptFriend(Event newEvent) {
+        newEvent.setLat(this.lat);
+        newEvent.setLon(this.lon);
+        newEvent.setWhen(this.when);
+        newEvent.setType(this.type);
+        newEvent.setLocation_name(this.location_name);
+        newEvent.setAddress(this.address);
+    }
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "receiver=" + receiver +
+                ", when=" + when +
+                ", active=" + active +
+                ", hour=" + hour +
+                ", minute=" + minute +
+                ", type=" + type +
+                ", location_name='" + location_name + '\'' +
+                ", address='" + address + '\'' +
+                ", lat=" + lat +
+                ", lon=" + lon +
+                '}';
+    }
 }

@@ -23,8 +23,8 @@ public class Friend extends User {
         super(name, surname, profilePic);
     }
 
-    public Friend(String id, String name, String surname) {
-        super(id, name, surname);
+    public Friend(String userId, String name, String surname) {
+        super(userId, name, surname);
     }
 
     public Friend(String userId, String userName, String userSurname, int userProfilePic) {

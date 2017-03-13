@@ -115,6 +115,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
 
         receiver = new Friend();
         receiver.setUserId(event.getReceiver().getUserId());
+
         //get all the arguments from the previous fragment
         Bundle args = getArguments();
         final int type = args.getInt("type");
@@ -166,6 +167,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
                 event.setLocation_name(place.getName().toString());
                 event.setLat(place.getLatLng().latitude);
                 event.setLon(place.getLatLng().longitude);
+
                 //show the mapsection
                 LinearLayout mapSection = (LinearLayout) getView().findViewById(R.id.map_section);
                 mapSection.setVisibility(View.VISIBLE);
@@ -194,7 +196,6 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
 
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this.getContext(), data);
-
                 Log.i(TAG, status.getStatusMessage());
             } else if (resultCode == RESULT_CANCELED) {
                 addLocation = (Switch) getView().findViewById(R.id.add_location);
@@ -327,6 +328,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 View preConfirmation = getView().getRootView().findViewById(R.id.preconfirmation_layout);
                 ImageView what = (ImageView) preConfirmation.findViewById(R.id.what);
                 ImageView receiverProfilePic = (ImageView) preConfirmation.findViewById(R.id.receiver);
@@ -372,6 +374,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
                     @Override
                     public void onClick(View v) {
                         event.setActive(MAYBE);
+
                         setDatabaseUser();
                     }
 
@@ -396,8 +399,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
         }
 
         //now the opposite, to add to the database of the person who invites the event
-        final Event eventOpposite = new Event();
-        eventOpposite.copyEvent(event);
+
 
         DatabaseReference usersDatabase = FirebaseDatabase.getInstance().getReference().child(UDB);
 
@@ -422,9 +424,12 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
                         finalProfilePic
                 );
 
+                Event eventOpposite = new Event();
+                event.copyToEventExceptFriend(eventOpposite);
                 eventOpposite.setReceiver(friendWhoSearched);
 
                 DatabaseReference databaseToAddTheOpposite = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
+
                 databaseToAddTheOpposite.child(event.getReceiver().getUserId()).child(currentUserId).setValue(eventOpposite);
                 Toast.makeText(getContext().getApplicationContext(), "Event created", Toast.LENGTH_SHORT).show();
 
@@ -497,7 +502,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
         }
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this.getContext())
                 .setSmallIcon(R.drawable.cast_ic_notification_small_icon)
-                .setContentTitle(eventopposite.getReceiver().getUserName() + " " + eventopposite.getReceiver().getUserName())
+                .setContentTitle(eventopposite.getReceiver().getUserName() + " " + eventopposite.getReceiver().getUserSurname())
                 .setContentText("Hey " + event.getReceiver().getUserName() + "! Wanna have a " + type + "?");
 
         Intent notificationIntent = new Intent(this.getContext(), HomeActivity.class);

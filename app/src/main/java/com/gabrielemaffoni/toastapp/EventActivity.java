@@ -59,12 +59,15 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
                 previousIntent.getString("surname"),
                 previousIntent.getInt("profile_picture")
         );
+        Log.d("UID received", receiver.getUserId());
         profilePic = receiver.getUserProfilePic();
         nameInvited = receiver.getUserName();
         surnameInvited = receiver.getUserSurname();
         invitedId = receiver.getUserId();
 
         event.setReceiver(receiver);
+
+        Log.d("UID event", event.getReceiver().getUserId());
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Places.GEO_DATA_API)
@@ -133,6 +136,7 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
                     argsEvent.putInt("receiver_profile_pic", profilePic);
                     argsEvent.putString("receiver_name", nameInvited);
                     argsEvent.putString("receiver_surname", surnameInvited);
+                    argsEvent.putString("receiver_ID", invitedId);
                     return WhatCard.newInstance(argsEvent);
 
                 case 1:
@@ -144,6 +148,7 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
                     args.putInt("receiver_profile_pic", profilePic);
                     args.putString("receiver_name", nameInvited);
                     args.putString("receiver_surname", surnameInvited);
+                    args.putString("receiver_ID", invitedId);
                     return WhatCard.newInstance(args);
             }
 
