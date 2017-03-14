@@ -377,7 +377,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
                     @Override
                     public void onClick(View v) {
                         event.setActive(MAYBE);
-
+                        event.setSenderID(currentUserId);
                         setDatabaseUser();
                     }
 

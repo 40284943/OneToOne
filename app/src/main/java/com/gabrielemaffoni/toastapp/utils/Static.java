@@ -37,6 +37,7 @@ public class Static {
     public final static String ELON = "lon";
     public final static String ELOCATION = "location_name";
     public final static String ETYPE = "type";
+    public final static String ESENDERID = "senderID";
 
 
     //RECEIVER CHILD

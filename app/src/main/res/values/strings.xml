@@ -38,6 +38,7 @@
 
     <string name="accept">Yes!</string>
     <string name="sorry_cant">Sorry, I can\'t</string>
+    <string name="waiting_for_answer">Waiting for an answer</string>
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->

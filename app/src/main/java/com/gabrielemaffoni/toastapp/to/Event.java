@@ -23,10 +23,22 @@ public class Event {
     private String address;
     private double lat;
     private double lon;
-
+    private String senderID;
 
     public Event() {
 
+    }
+
+    public Event(Friend receiver, GregorianCalendar when, int active, int type, String location_name, String address, double lat, double lon, String senderID) {
+        this.receiver = receiver;
+        this.when = when;
+        this.active = active;
+        this.type = type;
+        this.location_name = location_name;
+        this.address = address;
+        this.lat = lat;
+        this.lon = lon;
+        this.senderID = senderID;
     }
 
     public Event(Friend receiver, GregorianCalendar when, int active, int type, String location_name, String address, double lat, double lon) {
@@ -40,12 +52,13 @@ public class Event {
         this.lon = lon;
     }
 
-    public Event(Friend receiver, GregorianCalendar when, int active, int type, Place place, int avatar) {
+    public Event(Friend receiver, GregorianCalendar when, int active, int type, Place place, int avatar, String senderID) {
 
         this.receiver = receiver;
         this.when = when;
         this.active = active;
         this.type = type;
+        this.senderID = senderID;
 
     }
 
@@ -158,6 +171,14 @@ public class Event {
         this.lon = lon;
     }
 
+    public String getSenderID() {
+        return senderID;
+    }
+
+    public void setSenderID(String senderID) {
+        this.senderID = senderID;
+    }
+
     public void copyEvent(Event newEvent) {
         newEvent.setReceiver(this.receiver);
         newEvent.setLat(this.lat);
@@ -176,6 +197,7 @@ public class Event {
         newEvent.setLocation_name(this.getLocation_name());
         newEvent.setAddress(this.getAddress());
         newEvent.setActive(this.getActive());
+        newEvent.setSenderID(this.getSenderID());
     }
 
     @Override

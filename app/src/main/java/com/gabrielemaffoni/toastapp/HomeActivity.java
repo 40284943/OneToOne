@@ -2,7 +2,9 @@ package com.gabrielemaffoni.toastapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -20,10 +22,12 @@ import com.gabrielemaffoni.toastapp.to.Friend;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.MapView;
+
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -55,8 +59,10 @@ public class HomeActivity extends AppCompatActivity {
     private String cUID;
     private View eventExists;
 
+    private boolean changed;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
@@ -74,9 +80,21 @@ public class HomeActivity extends AppCompatActivity {
         friendsDatabase = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB).child(cUID);
         eventsDatabase = FirebaseDatabase.getInstance().getReference().child(EVENTSDB).child(cUID);
 
-        if (eventsDatabase != null) {
-            downloadAndShowEventData(eventsDatabase, savedInstanceState);
-        }
+        eventsDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+
+                    downloadAndShowEventData(eventsDatabase, savedInstanceState);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.app_name);
@@ -187,11 +205,13 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-    private void downloadAndShowEventData(DatabaseReference eventsDatabase, final Bundle savedInstanceState) {
+    private void downloadAndShowEventData(final DatabaseReference eventsDatabase, final Bundle savedInstanceState) {
         Query eventToDownload = eventsDatabase.getRef();
+
         eventToDownload.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
                 showEventData(dataSnapshot, savedInstanceState);
 
             }
@@ -199,11 +219,21 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
+                if (eventsDatabase != null) {
+
+                    showEventData(dataSnapshot, savedInstanceState);
+
+                } else {
+                    eventExists = findViewById(R.id.event_exists);
+                    eventExists.setVisibility(View.GONE);
+                }
+
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+                eventExists = findViewById(R.id.event_exists);
+                eventExists.setVisibility(View.GONE);
             }
 
             @Override
@@ -213,7 +243,8 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                eventExists = findViewById(R.id.event_exists);
+                eventExists.setVisibility(View.GONE);
             }
         });
 
@@ -275,8 +306,8 @@ public class HomeActivity extends AppCompatActivity {
                 eventLon
         );
 
-        showValuesOnCard(downloadedEvent, savedInstanceState);
-
+        boolean isSender = cUID.equals(String.valueOf(activeAndLocationData.get(ESENDERID)));
+        showValuesOnCard(downloadedEvent, savedInstanceState, isSender);
 }
 
     @Override
@@ -286,16 +317,26 @@ public class HomeActivity extends AppCompatActivity {
 
         eventsDatabase = FirebaseDatabase.getInstance().getReference().child(EVENTSDB).child(cUID);
 
+
         if (eventsDatabase != null) {
             downloadAndShowEventData(eventsDatabase, args);
+        } else {
+            eventExists.setVisibility(View.GONE);
         }
     }
 
-    private void showValuesOnCard(final Event event, Bundle savedInstanceState) {
-
+    private void showValuesOnCard(final Event event, Bundle savedInstanceState, final boolean isSender) {
         //Setting visibility of the include
         eventExists = findViewById(R.id.event_exists);
         eventExists.setVisibility(View.VISIBLE);
+
+        final CardView cardBottom = (CardView) eventExists.findViewById(R.id.total_card_notif);
+
+        if (isSender && event.getActive() != ACCEPTED) {
+            View waitingFor = eventExists.findViewById(R.id.waiting_for);
+            waitingFor.setVisibility(View.VISIBLE);
+        }
+
 
         //finding in the view everything
         ImageView typeEvent = (ImageView) eventExists.findViewById(R.id.what_notif);
@@ -306,8 +347,13 @@ public class HomeActivity extends AppCompatActivity {
         TextView whereName = (TextView) eventExists.findViewById(R.id.where_name_notif);
         TextView address = (TextView) eventExists.findViewById(R.id.where_address_notif);
 
-        Button accept = (Button) eventExists.findViewById(R.id.accept_notif);
-        Button iCant = (Button) eventExists.findViewById(R.id.sorry_notif);
+        final Button accept = (Button) eventExists.findViewById(R.id.accept_notif);
+        final Button iCant = (Button) eventExists.findViewById(R.id.sorry_notif);
+
+        if (event.getActive() == ACCEPTED) {
+            accept.setVisibility(View.GONE);
+            iCant.setVisibility(View.GONE);
+        }
 
         //showing the data from event downloaded
         typeEvent.setImageResource(Event.findRightImageResource(event.getType()));
@@ -333,22 +379,70 @@ public class HomeActivity extends AppCompatActivity {
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //acceptEvent();
+                acceptEvent(event, iCant, accept, isSender, cardBottom);
             }
         });
 
         iCant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //iCantEvent();
+                iCantEvent(event);
+
             }
         });
 
     }
 
-    private void acceptEvent() {
+    private void acceptEvent(final Event event, final Button iCant, final Button accepted, final boolean isSender, final CardView cardBottom) {
+        DatabaseReference accept = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
+        //On sender's event
+        accept.child(cUID).child(event.getReceiver().getUserId()).child(EACTIVE).setValue(ACCEPTED).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                iCant.setVisibility(View.GONE);
+                accepted.setVisibility(View.GONE);
+
+                if (isSender) {
+                    View waitingFor = eventExists.findViewById(R.id.waiting_for);
+                    waitingFor.setVisibility(View.GONE);
+
+                }
+            }
+        });
+        //On Receiver's event
+        accept.child(event.getReceiver().getUserId()).child(cUID).child(EACTIVE).setValue(ACCEPTED).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                iCant.setVisibility(View.GONE);
+                accepted.setVisibility(View.GONE);
+
+                if (isSender) {
+                    View waitingFor = eventExists.findViewById(R.id.waiting_for);
+                    waitingFor.setVisibility(View.GONE);
+
+                }
+
+            }
+        });
 
     }
+
+    private void iCantEvent(Event event) {
+        DatabaseReference accept = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
+        accept.child(cUID).child(event.getReceiver().getUserId()).child(EACTIVE).setValue(REFUSED);//On sender's event
+        accept.child(event.getReceiver().getUserId()).child(cUID).child(EACTIVE).setValue(REFUSED); //On receiver's event
+        accept.child(cUID).removeValue();
+        accept.child(event.getReceiver().getUserId()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                eventExists.setVisibility(View.GONE);
+            }
+        });
+
+
+    }
+
+
 
 }
 
