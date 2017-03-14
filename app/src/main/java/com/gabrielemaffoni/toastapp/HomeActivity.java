@@ -45,9 +45,9 @@ import java.util.HashMap;
 
 import static com.gabrielemaffoni.toastapp.utils.Static.*;
 
-//TODO add notifications (check onChildChanged - or similar) (!IMPORTANT)
+//TODO add notifications (check onChildChanged - or similar) - ask teacher (!IMPORTANT)
 //TODO Add personal settings(!IMPORTANT)
-//TODO Add possibility to delete friend (!IMPORTANT)
+//TODO Add possibility to delete friend - on long press on profile (!IMPORTANT)
 //TODO Add possibility to change avatar (< IMPORTANT)
 public class HomeActivity extends AppCompatActivity {
 
@@ -59,7 +59,7 @@ public class HomeActivity extends AppCompatActivity {
     private String cUID;
     private View eventExists;
 
-    private boolean changed;
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -80,7 +80,7 @@ public class HomeActivity extends AppCompatActivity {
         friendsDatabase = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB).child(cUID);
         eventsDatabase = FirebaseDatabase.getInstance().getReference().child(EVENTSDB).child(cUID);
 
-        eventsDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+        eventsDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -202,6 +202,15 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(singleEvent);
             }
         });
+
+        grid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                // showMenuSingleItem();
+                Log.d("Item long clicked", friendArrayList.get(position).getUserId());
+                return true;
+            }
+        });
     }
 
 
@@ -219,14 +228,9 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-                if (eventsDatabase != null) {
 
                     showEventData(dataSnapshot, savedInstanceState);
 
-                } else {
-                    eventExists = findViewById(R.id.event_exists);
-                    eventExists.setVisibility(View.GONE);
-                }
 
             }
 
@@ -262,7 +266,7 @@ public class HomeActivity extends AppCompatActivity {
         double eventLon = Double.valueOf(String.valueOf(activeAndLocationData.get(ELON)));
         String eventLocationName = String.valueOf(activeAndLocationData.get(ELOCATION));
         int eventType = Integer.valueOf(String.valueOf(activeAndLocationData.get(ETYPE)));
-
+        String senderID = String.valueOf(activeAndLocationData.get(ESENDERID));
         //QUERY DATA FOR SENDER
         HashMap<String, Object> receiverData = (HashMap<String, Object>) dataSnapshot.child(ERECEIVER).getValue();
 
@@ -303,10 +307,12 @@ public class HomeActivity extends AppCompatActivity {
                 eventLocationName,
                 eventAddress,
                 eventLat,
-                eventLon
+                eventLon,
+                senderID
         );
 
-        boolean isSender = cUID.equals(String.valueOf(activeAndLocationData.get(ESENDERID)));
+        boolean isSender = cUID.equals(String.valueOf(downloadedEvent.getSenderID()));
+
         showValuesOnCard(downloadedEvent, savedInstanceState, isSender);
 }
 
@@ -332,9 +338,14 @@ public class HomeActivity extends AppCompatActivity {
 
         final CardView cardBottom = (CardView) eventExists.findViewById(R.id.total_card_notif);
 
-        if (isSender && event.getActive() != ACCEPTED) {
+        if (isSender) {
             View waitingFor = eventExists.findViewById(R.id.waiting_for);
             waitingFor.setVisibility(View.VISIBLE);
+            if (event.getActive() == ACCEPTED) {
+
+                waitingFor.setVisibility(View.GONE);
+            }
+
         }
 
 
@@ -353,6 +364,9 @@ public class HomeActivity extends AppCompatActivity {
         if (event.getActive() == ACCEPTED) {
             accept.setVisibility(View.GONE);
             iCant.setVisibility(View.GONE);
+        } else {
+            accept.setVisibility(View.VISIBLE);
+            iCant.setVisibility(View.VISIBLE);
         }
 
         //showing the data from event downloaded

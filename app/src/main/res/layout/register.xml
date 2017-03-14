@@ -1,11 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/register_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:orientation="vertical"
     android:padding="30dp">
 
+    <ImageView
+        android:id="@+id/change_profile_pic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_user" />
+
+    <RelativeLayout
+        android:id="@+id/avatar_to_choose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorGreyDarker"
+        android:gravity="center"
+        android:padding="20dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/rowUpper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/avatar_1_choose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/ic_avatar_02" />
+
+            <ImageView
+                android:id="@+id/avatar_2_choose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/ic_avatar_03" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rowLower"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rowUpper"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/avatar_3_choose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/ic_avatar_04" />
+
+            <ImageView
+                android:id="@+id/avatar_4_choose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/ic_avatar_05" />
+        </LinearLayout>
+    </RelativeLayout>
     <EditText
         android:id="@+id/name_register"
         android:layout_width="match_parent"
@@ -13,6 +76,7 @@
         android:ems="10"
         android:hint="What's your name?"
         android:inputType="textPersonName" />
+
 
     <EditText
         android:id="@+id/surname_register"

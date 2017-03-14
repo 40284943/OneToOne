@@ -1,14 +1,9 @@
 package com.gabrielemaffoni.toastapp;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NotificationCompat;
 
 import android.support.v7.widget.CardView;
 import android.util.Log;
@@ -28,7 +23,6 @@ import android.widget.Toast;
 
 import com.gabrielemaffoni.toastapp.to.Event;
 import com.gabrielemaffoni.toastapp.to.Friend;
-import com.gabrielemaffoni.toastapp.utils.Static;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
@@ -37,7 +31,6 @@ import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -315,8 +308,13 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
 
             String timeChosen = spinner.getSelectedItem().toString();
 
-            dayChosen.set(Calendar.HOUR_OF_DAY, Integer.valueOf(timeChosen.substring(0, 2).toString()));
-            dayChosen.set(Calendar.MINUTE, Integer.valueOf(timeChosen.substring(3)));
+            try {
+                dayChosen.set(Calendar.HOUR_OF_DAY, Integer.valueOf(timeChosen.substring(0, 2).toString()));
+                dayChosen.set(Calendar.MINUTE, Integer.valueOf(timeChosen.substring(3)));
+
+            } catch (NumberFormatException e) {
+                //Do nothing
+            }
         }
 
     }
@@ -466,34 +464,17 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
 
 
     private void sendNotification(Event eventopposite, Event event) {
-        String type = "";
+        Intent sendNotification = new Intent(getContext().getApplicationContext(), Notification.class);
+        Bundle extras = new Bundle();
+        extras.putInt("type", event.getType());
+        extras.putString("name_sender", eventopposite.getReceiver().getUserName());
+        extras.putString("surname_sender", eventopposite.getReceiver().getUserSurname());
+        extras.putString("name_receiver", event.getReceiver().getUserName());
+        sendNotification.putExtras(extras);
 
-        switch (event.getType()) {
-            case BEER:
-                type = "beer";
-                break;
-            case COCKTAIL:
-                type = "cocktail";
-                break;
-            case LUNCH:
-                type = "lunch";
-                break;
-            case COFFEE:
-                type = "coffee";
-                break;
-        }
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(this.getContext())
-                .setSmallIcon(R.drawable.cast_ic_notification_small_icon)
-                .setContentTitle(eventopposite.getReceiver().getUserName() + " " + eventopposite.getReceiver().getUserSurname())
-                .setContentText("Hey " + event.getReceiver().getUserName() + "! Wanna have a " + type + "?");
+        getContext().sendBroadcast(sendNotification);
 
-        Intent notificationIntent = new Intent(this.getContext(), HomeActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(this.getContext(), 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        notification.setContentIntent(contentIntent);
 
-        //Add as notification
-        NotificationManager manager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(0, notification.build());
     }
 }
 

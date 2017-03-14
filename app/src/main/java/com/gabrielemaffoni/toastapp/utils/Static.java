@@ -7,6 +7,9 @@ import com.gabrielemaffoni.toastapp.R;
  */
 
 public class Static {
+    //BROADCAST
+    public static final String BROADCAST = "com.gabrielemaffoni.toastapp.android.action.broadcast";
+
     //AVATARS
     public final static int AVATAR_STANDARD = R.drawable.ic_user;
     public final static int AVATAR1 = R.drawable.ic_avatar_02;

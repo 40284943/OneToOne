@@ -52,15 +52,7 @@ public class Event {
         this.lon = lon;
     }
 
-    public Event(Friend receiver, GregorianCalendar when, int active, int type, Place place, int avatar, String senderID) {
 
-        this.receiver = receiver;
-        this.when = when;
-        this.active = active;
-        this.type = type;
-        this.senderID = senderID;
-
-    }
 
     public Event(Friend receiver) {
         this.receiver = receiver;
