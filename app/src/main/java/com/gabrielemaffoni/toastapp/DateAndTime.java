@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NotificationCompat;
 
 import android.support.v7.widget.CardView;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 
 import com.gabrielemaffoni.toastapp.to.Event;
 import com.gabrielemaffoni.toastapp.to.Friend;
+import com.gabrielemaffoni.toastapp.utils.Static;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
@@ -34,8 +36,10 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -80,7 +84,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
     private Spinner day;
     private Spinner time;
     private Switch addLocation;
-    private MapView mapView;
+    private SupportMapFragment mapView;
 
     private FloatingActionButton okay;
 
@@ -175,7 +179,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
                 //find the elements inside mapsection
                 nameLocation = (TextView) getView().findViewById(R.id.name_location);
                 addressLocation = (TextView) getView().findViewById(R.id.address_location);
-                mapView = (MapView) getView().findViewById(R.id.mapView);
+                mapView = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapView);
 
                 //Copy the name and the location of the place
                 nameLocation.setText(place.getName());
@@ -208,8 +212,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
         day = (Spinner) rootView.findViewById(R.id.day_spinner);
         time = (Spinner) rootView.findViewById(R.id.time_spinner);
         addLocation = (Switch) rootView.findViewById(R.id.add_location);
-        mapView = (MapView) rootView.findViewById(R.id.mapView);
-        mapView.onCreate(savedInstanceState);
+        mapView = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapView);
         okay = (FloatingActionButton) rootView.findViewById(R.id.okay);
     }
 
@@ -336,12 +339,12 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
                 TextView time = (TextView) preConfirmation.findViewById(R.id.time);
                 TextView where = (TextView) preConfirmation.findViewById(R.id.where_name);
                 TextView whereAddress = (TextView) preConfirmation.findViewById(R.id.where_address);
-                MapView mapPicked = (MapView) preConfirmation.findViewById(R.id.map_picked_conf);
+                MapFragment mapPicked = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map_picked_conf);
                 Button done = (Button) preConfirmation.findViewById(R.id.done);
                 IS_PRESSED = true;
 
                 //Set the event image
-                what.setImageResource(findRightImageResource(event.getType()));
+                what.setImageResource(Event.findRightImageResource(event.getType()));
                 receiverProfilePic.setImageResource(event.getReceiver().getUserProfilePic());
                 date.setText(selectedDay);
                 time.setText(event.getWhen().get(Calendar.HOUR) + ":" + event.getWhen().get(Calendar.MINUTE));
@@ -461,27 +464,6 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
         });
     }
 
-    private int findRightImageResource(int type) {
-        //Check which event it is
-        int imageResource = 0;
-
-        switch (type) {
-            case BEER:
-                imageResource = R.drawable.ic_beer;
-                break;
-            case COCKTAIL:
-                imageResource = R.drawable.ic_cocktail;
-                break;
-            case LUNCH:
-                imageResource = R.drawable.ic_lunch;
-                break;
-            case COFFEE:
-                imageResource = R.drawable.ic_coffee;
-                break;
-        }
-
-        return imageResource;
-    }
 
     private void sendNotification(Event eventopposite, Event event) {
         String type = "";

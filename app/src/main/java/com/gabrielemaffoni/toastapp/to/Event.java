@@ -1,8 +1,13 @@
 package com.gabrielemaffoni.toastapp.to;
 
+import com.gabrielemaffoni.toastapp.R;
 import com.google.android.gms.location.places.Place;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
+
+import static com.gabrielemaffoni.toastapp.utils.Static.*;
 
 /**
  * Created by gabrielemaffoni on 08/03/2017.
@@ -13,8 +18,6 @@ public class Event {
     private Friend receiver;
     private GregorianCalendar when;
     private int active;
-    private int hour;
-    private int minute;
     private int type;
     private String location_name;
     private String address;
@@ -26,12 +29,10 @@ public class Event {
 
     }
 
-    public Event(Friend receiver, GregorianCalendar when, int active, int hour, int minute, int type, String location_name, String address, double lat, double lon) {
+    public Event(Friend receiver, GregorianCalendar when, int active, int type, String location_name, String address, double lat, double lon) {
         this.receiver = receiver;
         this.when = when;
         this.active = active;
-        this.hour = hour;
-        this.minute = minute;
         this.type = type;
         this.location_name = location_name;
         this.address = address;
@@ -52,6 +53,46 @@ public class Event {
         this.receiver = receiver;
     }
 
+    public static int findRightImageResource(int type) {
+        //Check which event it is
+        int imageResource = 0;
+
+        switch (type) {
+            case BEER:
+                imageResource = R.drawable.ic_beer;
+                break;
+            case COCKTAIL:
+                imageResource = R.drawable.ic_cocktail;
+                break;
+            case LUNCH:
+                imageResource = R.drawable.ic_lunch;
+                break;
+            case COFFEE:
+                imageResource = R.drawable.ic_coffee;
+                break;
+        }
+
+        return imageResource;
+    }
+
+    public static String setTodayOrTomorrow(GregorianCalendar date) {
+        String finalDate = "";
+        Calendar today = Calendar.getInstance();
+        GregorianCalendar todayCal = new GregorianCalendar(
+                today.get(Calendar.YEAR),
+                today.get(Calendar.MONTH),
+                today.get(Calendar.DAY_OF_MONTH)
+        );
+
+
+        if (date.equals(todayCal)) {
+            finalDate = "Today";
+        } else {
+            finalDate = "Tomorrow";
+        }
+
+        return finalDate;
+    }
 
     public Friend getReceiver() {
         return receiver;
@@ -75,22 +116,6 @@ public class Event {
 
     public void setActive(int active) {
         this.active = active;
-    }
-
-    public int getHour() {
-        return hour;
-    }
-
-    public void setHour(int hour) {
-        this.hour = hour;
-    }
-
-    public int getMinute() {
-        return minute;
-    }
-
-    public void setMinute(int minute) {
-        this.minute = minute;
     }
 
     public int getType() {
@@ -144,12 +169,13 @@ public class Event {
     }
 
     public void copyToEventExceptFriend(Event newEvent) {
-        newEvent.setLat(this.lat);
-        newEvent.setLon(this.lon);
-        newEvent.setWhen(this.when);
-        newEvent.setType(this.type);
-        newEvent.setLocation_name(this.location_name);
-        newEvent.setAddress(this.address);
+        newEvent.setLat(this.getLat());
+        newEvent.setLon(this.getLon());
+        newEvent.setWhen(this.getWhen());
+        newEvent.setType(this.getType());
+        newEvent.setLocation_name(this.getLocation_name());
+        newEvent.setAddress(this.getAddress());
+        newEvent.setActive(this.getActive());
     }
 
     @Override
@@ -158,8 +184,7 @@ public class Event {
                 "receiver=" + receiver +
                 ", when=" + when +
                 ", active=" + active +
-                ", hour=" + hour +
-                ", minute=" + minute +
+
                 ", type=" + type +
                 ", location_name='" + location_name + '\'' +
                 ", address='" + address + '\'' +

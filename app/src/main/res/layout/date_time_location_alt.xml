@@ -70,8 +70,9 @@
                 android:visibility="invisible">
 
 
-                <com.google.android.gms.maps.MapView
+                <fragment xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/mapView"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
                     android:layout_weight="1"
