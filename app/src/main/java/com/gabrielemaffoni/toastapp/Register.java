@@ -4,14 +4,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.gabrielemaffoni.toastapp.to.User;
 import com.gabrielemaffoni.toastapp.utils.Static;
+import com.google.android.gms.identity.intents.AddressConstants;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -26,7 +30,6 @@ import static com.gabrielemaffoni.toastapp.utils.Static.*;
  * Created by gabrielemaffoni on 09/03/2017.
  */
 
-//TODO add the possibility to choose the avatar.
 
 public class Register extends AppCompatActivity implements View.OnClickListener {
     DatabaseReference db;
@@ -44,6 +47,8 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     private ImageView avatar4;
     private int avatarChosen;
     private RelativeLayout chooseAvatar;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,40 +80,78 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         register.setOnClickListener(this);
         signIn.setOnClickListener(this);
         standardAvatar.setOnClickListener(this);
+
     }
 
 
     private void registerUser() {
-        final String userName = name.getText().toString().trim();
-        final String userSurname = surname.getText().toString().trim();
-        final String userEmail = email.getText().toString().trim();
-        final String userPassword = password.getText().toString().trim();
-        final int userProfilePic = avatarChosen;
-        firebaseAuth.createUserWithEmailAndPassword(userEmail, userPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                db = FirebaseDatabase.getInstance().getReference();
-                writeNewUser(userName, userSurname, userEmail, userPassword, userProfilePic);
-                finish();
-                Intent startApp = new Intent(getApplicationContext(), HomeActivity.class);
-                startActivity(startApp);
+
+        setLineBottomNormal(name);
+        setLineBottomNormal(surname);
+        setLineBottomNormal(email);
+        setLineBottomNormal(password);
+
+        try {
+
+            final String userName = name.getText().toString().trim();
+            final String userSurname = surname.getText().toString().trim();
+            final String userEmail = email.getText().toString().trim();
+            final String userPassword = password.getText().toString().trim();
+            final int userProfilePic = avatarChosen;
+            firebaseAuth.createUserWithEmailAndPassword(userEmail, userPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    db = FirebaseDatabase.getInstance().getReference();
+                    writeNewUser(userName, userSurname, userEmail, userPassword, userProfilePic);
+                    finish();
+                    Intent startApp = new Intent(getApplicationContext(), HomeActivity.class);
+                    startActivity(startApp);
+
+                }
+            });
+
+        } catch (IllegalArgumentException e){
+            if (name.getText().toString().isEmpty()){
+                setBottomLineColor(name,R.color.colorRed);
+                Toast.makeText(getApplicationContext(),"Please fill every space", Toast.LENGTH_SHORT).show();
+            }
+            if(surname.getText().toString().isEmpty()){
+                setBottomLineColor(surname,R.color.colorRed);
+                Toast.makeText(getApplicationContext(),"Please fill every space", Toast.LENGTH_SHORT).show();
 
             }
-        });
+
+            if (email.getText().toString().isEmpty()){
+                setBottomLineColor(email,R.color.colorRed);
+                Toast.makeText(getApplicationContext(),"Please fill every space", Toast.LENGTH_SHORT).show();
+
+            }
+            if (password.getText().toString().isEmpty()){
+                setBottomLineColor(password, R.color.colorRed);
+                Toast.makeText(getApplicationContext(),"Please fill every space", Toast.LENGTH_SHORT).show();
+
+            }
+        }
+
     }
 
     private void writeNewUser(String name, String surname, String email, String password, int profilePic) {
-        //FIXME add condition for the username and password to be empty.
 
-        User user = new User(
-                firebaseAuth.getCurrentUser().getUid(),
-                name,
-                surname,
-                email,
-                password,
-                profilePic);
+        try {
 
-        db.child(UDB).child(user.getUserId()).setValue(user);
+            User user = new User(
+                    firebaseAuth.getCurrentUser().getUid(),
+                    name,
+                    surname,
+                    email,
+                    password,
+                    profilePic);
+
+            db.child(UDB).child(user.getUserId()).setValue(user);
+        } catch (NullPointerException e){
+            Toast.makeText(this, "Problem with the registration, try again later.", Toast.LENGTH_SHORT).show();
+        }
+
 
     }
 
@@ -124,7 +167,22 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
     private void clickOnAvatar(int avatar) {
         standardAvatar.setImageResource(avatar);
-        avatarChosen = avatar;
+        switch (avatar){
+            case AVATAR1:
+                avatarChosen = 1;
+                break;
+            case AVATAR2:
+                avatarChosen = 2;
+                break;
+            case AVATAR3:
+                avatarChosen = 3;
+                break;
+            case AVATAR4:
+                avatarChosen = 4;
+                break;
+            default:
+                avatarChosen = 0;
+        }
         chooseAvatar.setVisibility(View.GONE);
 
     }
@@ -134,6 +192,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
 
         if (view == register) {
+
             registerUser();
         } else if (view == signIn) {
             finish();
@@ -151,4 +210,33 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
             clickOnAvatar(AVATAR4);
         }
     }
+
+
+    public void setLineBottomNormal(final EditText editText){
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    setBottomLineColor(editText,R.color.colorAccent);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+
+    }
+
+
+    public void setBottomLineColor(EditText textField, int resourceColorId){
+        textField.setBackgroundTintList(getResources().getColorStateList(resourceColorId));
+    }
+
+
 }

@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 import com.gabrielemaffoni.toastapp.classes.FriendsAdapter;
 import com.gabrielemaffoni.toastapp.to.Event;
 import com.gabrielemaffoni.toastapp.to.Friend;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -37,17 +40,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+
 
 
 import static com.gabrielemaffoni.toastapp.utils.Static.*;
 
 //TODO add notifications (check onChildChanged - or similar) - ask teacher (!IMPORTANT)
 //TODO Add personal settings(!IMPORTANT)
-//TODO Add possibility to delete friend - on long press on profile (!IMPORTANT)
 //TODO Add possibility to change avatar (< IMPORTANT)
 public class HomeActivity extends AppCompatActivity {
 
@@ -76,9 +81,13 @@ public class HomeActivity extends AppCompatActivity {
         }
 
 
-        cUID = firebaseAuth.getCurrentUser().getUid();
-        friendsDatabase = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB).child(cUID);
-        eventsDatabase = FirebaseDatabase.getInstance().getReference().child(EVENTSDB).child(cUID);
+        try {
+            cUID = firebaseAuth.getCurrentUser().getUid();
+
+            friendsDatabase = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB).child(cUID);
+            eventsDatabase = FirebaseDatabase.getInstance().getReference().child(EVENTSDB).child(cUID);
+
+
 
         eventsDatabase.addValueEventListener(new ValueEventListener() {
             @Override
@@ -105,17 +114,23 @@ public class HomeActivity extends AppCompatActivity {
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-
-                if (item.getTitle().equals(ADD_USER)) {
-                    Intent activity = new Intent(getApplicationContext(), SearchUser.class);
-                    startActivity(activity);
-                } else if (item.getTitle().equals(LOGOUT)) {
-                    firebaseAuth.signOut();
-                    finish();
-                    Toast.makeText(getApplicationContext(), "You logged out", Toast.LENGTH_SHORT).show();
-                    Intent signIn = new Intent(getApplicationContext(), Login.class);
-                    startActivity(signIn);
-
+                switch (item.getItemId()) {
+                    case R.id.add_user:
+                        Intent activity = new Intent(getApplicationContext(), SearchUser.class);
+                        startActivity(activity);
+                        break;
+                    case R.id.logout:
+                        firebaseAuth.signOut();
+                        finish();
+                        Toast.makeText(getApplicationContext(), "You logged out", Toast.LENGTH_SHORT).show();
+                        Intent signIn = new Intent(getApplicationContext(), Login.class);
+                        startActivity(signIn);
+                        break;
+                    case R.id.settings:
+                        Intent settings = new Intent(getApplicationContext(), SettingsActivity.class);
+                        startActivity(settings);
+                        //doNothing
+                        break;
                 }
 
 
@@ -130,7 +145,7 @@ public class HomeActivity extends AppCompatActivity {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Friend friend = postSnapshot.getValue(Friend.class);
                     friend.setUserId(postSnapshot.getKey());
-
+                    friend.convertAvatar(friend.getUserProfilePic());
                     friendArrayList.add(friend);
                 }
                 FriendsAdapter adapter = new FriendsAdapter(getApplicationContext(), friendArrayList);
@@ -145,7 +160,17 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-
+        } catch (NullPointerException e){
+            Intent login = new Intent(this, Login.class);
+            startActivity(login);
+            finish();
+            Toast.makeText(getApplicationContext(),"Sorry, problems with the database",Toast.LENGTH_SHORT).show();
+        } catch (RuntimeException e){
+            Intent login = new Intent(this, Login.class);
+            startActivity(login);
+            finish();
+            Toast.makeText(getApplicationContext(),"Sorry, problems with the database",Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -181,9 +206,8 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    private void setGridDesignData(GridView grid, FriendsAdapter adapter) {
+    private void setGridDesignData(final GridView grid, FriendsAdapter adapter) {
         grid.setAdapter(adapter);
-
         grid.setVerticalSpacing(60);
         grid.setNumColumns(3);
         grid.setColumnWidth(40);
@@ -192,26 +216,73 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Intent singleEvent = new Intent(getApplicationContext(), EventActivity.class);
+                inviteFriend(position);
 
-                singleEvent.putExtra("profile_picture", friendArrayList.get(position).getUserProfilePic());
-                singleEvent.putExtra("name", friendArrayList.get(position).getUserName());
-                singleEvent.putExtra("surname", friendArrayList.get(position).getUserSurname());
-                singleEvent.putExtra("user_id", friendArrayList.get(position).getUserId());
-
-                startActivity(singleEvent);
             }
         });
 
-        grid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        //On long press shows the context menu
+        registerForContextMenu(grid);
+
+    }
+
+    public void inviteFriend(int position) {
+        Intent singleEvent = new Intent(getApplicationContext(), EventActivity.class);
+
+        singleEvent.putExtra("profile_picture", friendArrayList.get(position).getUserProfilePic());
+        singleEvent.putExtra("name", friendArrayList.get(position).getUserName());
+        singleEvent.putExtra("surname", friendArrayList.get(position).getUserSurname());
+        singleEvent.putExtra("user_id", friendArrayList.get(position).getUserId());
+
+        startActivity(singleEvent);
+    }
+
+    public void deleteFriend(int position) {
+        DatabaseReference otherFriendDb = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB).child(friendArrayList.get(position).getUserId());
+        friendsDatabase.child(friendArrayList.get(position).getUserId()).removeValue();
+        otherFriendDb.child(cUID).removeValue(new DatabaseReference.CompletionListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                // showMenuSingleItem();
-                Log.d("Item long clicked", friendArrayList.get(position).getUserId());
-                return true;
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                Toast.makeText(getApplicationContext(), "Friend removed", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        menu.setHeaderTitle(friendArrayList.get(info.position).getUserName() + " " + friendArrayList.get(info.position).getUserSurname());
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_long_press_grid, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+            case R.id.delete_friend:
+                deleteFriend(info.position);
+                break;
+            case R.id.info:
+                showFriendsProfile(info.position);
+                break;
+            case R.id.invite:
+                inviteFriend(info.position);
+                break;
+        }
+
+        return true;
+    }
+
+    private void showFriendsProfile(int position) {
+        Intent showProfile = new Intent(this.getApplicationContext(), Profile.class);
+        showProfile.putExtra("name", friendArrayList.get(position).getUserName());
+        showProfile.putExtra("surname", friendArrayList.get(position).getUserSurname());
+        showProfile.putExtra("email", friendArrayList.get(position).getUserEmail());
+        showProfile.putExtra("avatar", friendArrayList.get(position).getUserProfilePic());
+        startActivity(showProfile);
+    }
+
 
 
     private void downloadAndShowEventData(final DatabaseReference eventsDatabase, final Bundle savedInstanceState) {
@@ -371,9 +442,17 @@ public class HomeActivity extends AppCompatActivity {
 
         //showing the data from event downloaded
         typeEvent.setImageResource(Event.findRightImageResource(event.getType()));
+        //convert user profile picture
+        event.getReceiver().convertAvatar(event.getReceiver().getUserProfilePic());
+
+        //set user profile picture
         senderProfPic.setImageResource(event.getReceiver().getUserProfilePic());
         day.setText(Event.setTodayOrTomorrow(event.getWhen()));
-        time.setText(event.getWhen().get(Calendar.HOUR_OF_DAY) + ":" + event.getWhen().get(Calendar.MINUTE));
+        Date timer = event.getWhen().getTime();
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+
+        time.setText(formatter.format(timer));
+
 
 
         //Showing map

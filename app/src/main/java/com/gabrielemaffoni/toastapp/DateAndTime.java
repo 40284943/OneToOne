@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,7 +35,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
-
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -45,18 +43,26 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
-
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
-
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-
 import static com.gabrielemaffoni.toastapp.EventActivity.event;
-import static com.gabrielemaffoni.toastapp.utils.Static.*;
+import static com.gabrielemaffoni.toastapp.utils.Static.EVENTSDB;
+import static com.gabrielemaffoni.toastapp.utils.Static.IS_PRESSED;
+import static com.gabrielemaffoni.toastapp.utils.Static.MAYBE;
+import static com.gabrielemaffoni.toastapp.utils.Static.PLACE_AUTOCOMPLETE_REQUEST_CODE;
+import static com.gabrielemaffoni.toastapp.utils.Static.TAG;
+import static com.gabrielemaffoni.toastapp.utils.Static.UDB;
+import static com.gabrielemaffoni.toastapp.utils.Static.UID;
+import static com.gabrielemaffoni.toastapp.utils.Static.UNAME;
+import static com.gabrielemaffoni.toastapp.utils.Static.UPROFPIC;
+import static com.gabrielemaffoni.toastapp.utils.Static.USURNAME;
 
 
 /**
@@ -66,7 +72,6 @@ import static com.gabrielemaffoni.toastapp.utils.Static.*;
  */
 
 public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedListener {
-
 
 
     private static String HALF_HOUR = "30";
@@ -286,7 +291,6 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
     }
 
 
-
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         Spinner spinner = (Spinner) parent;
@@ -345,7 +349,11 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
                 what.setImageResource(Event.findRightImageResource(event.getType()));
                 receiverProfilePic.setImageResource(event.getReceiver().getUserProfilePic());
                 date.setText(selectedDay);
-                time.setText(event.getWhen().get(Calendar.HOUR) + ":" + event.getWhen().get(Calendar.MINUTE));
+
+                //formats the time
+                Date timer = event.getWhen().getTime();
+                SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+                time.setText(formatter.format(timer));
 
                 try {
 
@@ -434,7 +442,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
                 databaseToAddTheOpposite.child(event.getReceiver().getUserId()).child(currentUserId).setValue(eventOpposite);
                 Toast.makeText(getContext().getApplicationContext(), "Event created", Toast.LENGTH_SHORT).show();
 
-                sendNotification(eventOpposite, event);
+                //sendNotification(eventOpposite, event);
                 getActivity().finish();
             }
 
@@ -463,8 +471,8 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
     }
 
 
-    private void sendNotification(Event eventopposite, Event event) {
-        Intent sendNotification = new Intent(getContext().getApplicationContext(), Notification.class);
+    /*private void sendNotification(Event eventopposite, Event event) {
+        Intent sendNotification = new Intent(getContext().getApplicationContext(), NotificationService.class);
         Bundle extras = new Bundle();
         extras.putInt("type", event.getType());
         extras.putString("name_sender", eventopposite.getReceiver().getUserName());
@@ -475,7 +483,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
         getContext().sendBroadcast(sendNotification);
 
 
-    }
+    }*/
 }
 
 

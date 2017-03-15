@@ -100,9 +100,26 @@ public class AddUser extends AppCompatActivity {
 
 
     private final void setAvatar(ImageView avatarToChoose, LinearLayout chooseSection, int avatar) {
+
         avatarToChoose.setImageResource(avatar);
         chooseSection.setVisibility(View.GONE);
-        avatarFinal = avatar;
+        switch (avatar) {
+            case AVATAR1:
+                avatarFinal = 1;
+                break;
+            case AVATAR2:
+                avatarFinal = 2;
+                break;
+            case AVATAR3:
+                avatarFinal = 3;
+                break;
+            case AVATAR4:
+                avatarFinal = 4;
+                break;
+            default:
+                avatarFinal = 0;
+        }
+
     }
 
 }

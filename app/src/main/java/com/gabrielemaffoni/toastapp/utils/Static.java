@@ -1,5 +1,7 @@
 package com.gabrielemaffoni.toastapp.utils;
 
+import android.widget.EditText;
+
 import com.gabrielemaffoni.toastapp.R;
 
 /**
@@ -45,7 +47,6 @@ public class Static {
 
     //RECEIVER CHILD
     public final static String ERECEIVER = "receiver";
-
     public final static String ERUID = "userId";
     public final static String ERUNAME = "userName";
     public final static String ERUPRPIC = "userProfilePic";
@@ -91,6 +92,8 @@ public class Static {
     public static int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
     public static String TAG = "Places";
+
+    public static long ALARM_DELAY = 100*60;
 
 
 }

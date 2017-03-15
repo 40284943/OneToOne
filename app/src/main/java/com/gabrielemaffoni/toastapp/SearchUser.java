@@ -64,6 +64,7 @@ public class SearchUser extends AppCompatActivity {
 
                         userFoundName.setText(String.valueOf(users.get(UNAME)) + " " + String.valueOf(users.get(USURNAME)));
                         addUser = (Button) findViewById(R.id.addUserFound);
+                        String finalEmail = String.valueOf(users.get(UEMAIL));
                         String finalName = String.valueOf(users.get(UNAME));
                         String finalSurname = String.valueOf(users.get(USURNAME));
                         String finalUserId = String.valueOf(users.get(UID));
@@ -77,6 +78,8 @@ public class SearchUser extends AppCompatActivity {
                                 finalSurname,
                                 finalProfilePic
                         );
+                        friend.setUserEmail(finalEmail);
+                        friend.convertAvatar(friend.getUserProfilePic());
                         addUserMethod(addUser, currentUserId, finalUserId, friend, db);
                     }
 
@@ -127,6 +130,7 @@ public class SearchUser extends AppCompatActivity {
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                         HashMap<String, Object> searcher = (HashMap<String, Object>) dataSnapshot.getValue();
 
+                        String finalSearcherEmail = String.valueOf(searcher.get(UEMAIL));
                         String finalSearcherName = String.valueOf(searcher.get(UNAME));
                         String finalSearcherSurname = String.valueOf(searcher.get(USURNAME));
                         String finalSearcherId = String.valueOf(searcher.get(UID));
@@ -137,9 +141,11 @@ public class SearchUser extends AppCompatActivity {
                         Friend friendWhoSearched = new Friend(
                                 finalSearcherId,
                                 finalSearcherName,
-                                finalSearcherSurname,
-                                finalProfilePic
+                                finalSearcherSurname
                         );
+                        friendWhoSearched.convertAvatar(finalProfilePic);
+                        friendWhoSearched.setUserEmail(finalSearcherEmail);
+
 
                         dbToAddFriendIn.child(userFound).child(searcherId).setValue(friendWhoSearched);
 

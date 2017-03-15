@@ -6,11 +6,16 @@
         android:icon="@drawable/ic_add_user"
         android:numericShortcut="0"
         android:title="Add user"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/settings"
+        android:title="@string/title_activity_settings" />
     <item
         android:id="@+id/logout"
         android:icon="@drawable/ic_logout"
         android:numericShortcut="1"
         android:title="Logout"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
+
+
 </menu>

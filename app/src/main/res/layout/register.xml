@@ -69,6 +69,7 @@
                 android:src="@drawable/ic_avatar_05" />
         </LinearLayout>
     </RelativeLayout>
+
     <EditText
         android:id="@+id/name_register"
         android:layout_width="match_parent"
