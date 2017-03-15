@@ -26,6 +26,7 @@ public class User {
         this.userProfilePic = userProfilePic;
     }
 
+
     public User(String userName, String userSurname) {
         this.userName = userName;
         this.userSurname = userSurname;

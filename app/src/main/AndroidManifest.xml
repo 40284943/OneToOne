@@ -44,6 +44,7 @@
         <activity android:name=".AddUser" />
         <activity android:name=".EventActivity" />
         <activity android:name=".SearchUser" />
+        <activity android:name=".Profile" />
     </application>
 
 </manifest>
