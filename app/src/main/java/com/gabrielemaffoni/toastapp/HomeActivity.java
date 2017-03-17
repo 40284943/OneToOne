@@ -128,6 +128,7 @@ public class HomeActivity extends AppCompatActivity {
                         break;
                     case R.id.settings:
                         Intent settings = new Intent(getApplicationContext(), SettingsActivity.class);
+                        settings.putExtra("cUID", cUID);
                         startActivity(settings);
                         //doNothing
                         break;

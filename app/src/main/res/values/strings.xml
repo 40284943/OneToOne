@@ -45,15 +45,30 @@
     <!-- Strings related to Preference -->
     <string name="pref_account">Account</string>
     <string name="pref_email">Email</string>
-    <string name="pref_password">Password</string>
+    <string name="pref_email_summary">Change your email</string>
+
+    <string name="pref_password">Change your password</string>
 
     <string name="pref_profile">Your profile</string>
     <string name="pref_avatar">Your avatar</string>
-    <string name="pref_name">Your name</string>
-    <string name="pref_surnam">Your surname</string>
+
+    <string name="pref_name">Name</string>
+    <string name="pref_name_summary">Change your name</string>
+
+    <string name="pref_surname">Surname</string>
+    <string name="pref_surname_summary">Change your surname</string>
 
     <string name="pref_view">Personalise your app</string>
     <string name="pref_color">Change the color</string>
+
+
+    <string-array name="avatars">
+        <item>@drawable/ic_user</item>
+        <item>@drawable/ic_avatar_02</item>
+        <item>@drawable/ic_avatar_03</item>
+        <item>@drawable/ic_avatar_04</item>
+        <item>@drawable/ic_avatar_05</item>
+    </string-array>
 
     <!--On long press menu-->
     <string name="delete">Delete</string>
