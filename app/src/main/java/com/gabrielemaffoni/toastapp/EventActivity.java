@@ -33,6 +33,7 @@ import static com.gabrielemaffoni.toastapp.utils.Static.*;
 public class EventActivity extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener {
     private static final int NUM_PAGES = 2;
     public static Event event;
+    public static int currentItem;
     private ViewPager viewPager;
     private PagerAdapter adapter;
     private GoogleApiClient mGoogleApiClient;
@@ -109,13 +110,19 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
         Otherwise its behaviours are normal.
          */
         } else {
-            int count = getFragmentManager().getBackStackEntryCount();
-            if (count == 0) {
+            int count = viewPager.getCurrentItem();
+            if (count == 1) {
+                this.setCurrentItem(0, true);
+            } else if (count == 0) {
                 super.onBackPressed();
-            } else {
-                getFragmentManager().popBackStack();
             }
+
+
         }
+    }
+
+    public void setCurrentItem(int item, boolean smoothScrool) {
+        viewPager.setCurrentItem(item, smoothScrool);
     }
 
     public class Adapter extends FragmentPagerAdapter {
@@ -152,7 +159,9 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
                     return WhatCard.newInstance(args);
             }
 
+
         }
+
     }
 
 

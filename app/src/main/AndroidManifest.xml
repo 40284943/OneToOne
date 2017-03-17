@@ -45,8 +45,6 @@
         <activity android:name=".EventActivity" />
         <activity android:name=".SearchUser" />
         <activity android:name=".Profile" />
-        <activity android:name=".SettingsActivity">
-        </activity>
     </application>
 
 </manifest>

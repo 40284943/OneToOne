@@ -52,6 +52,7 @@ import java.util.HashMap;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static com.gabrielemaffoni.toastapp.EventActivity.currentItem;
 import static com.gabrielemaffoni.toastapp.EventActivity.event;
 import static com.gabrielemaffoni.toastapp.utils.Static.EVENTSDB;
 import static com.gabrielemaffoni.toastapp.utils.Static.IS_PRESSED;
@@ -98,7 +99,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
 
     //NEw instance to navigate through the adapterview
     public static DateAndTime newInstance(Bundle args) {
-
+        currentItem = 1;
         DateAndTime fragment = new DateAndTime();
         fragment.setArguments(args);
         return fragment;
