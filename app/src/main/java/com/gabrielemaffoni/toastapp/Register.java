@@ -30,7 +30,11 @@ import static com.gabrielemaffoni.toastapp.utils.Static.UDB;
 
 
 /**
- * Created by gabrielemaffoni on 09/03/2017.
+ * This activity shows the field necessary from the user to register on the database.
+ * The two buttons are made to go to the login screen (in case of a mistake from the user) or to register and go to the homescreen.
+ *
+ * @author 40284943
+ * @version 1.2
  */
 
 
@@ -57,14 +61,27 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
 
+        //Connects to the database
         firebaseAuth = FirebaseAuth.getInstance();
 
+        //check again if the user is already logged in
         if (firebaseAuth.getCurrentUser() != null) {
-            startActivity(new Intent(this, HomeActivity.class));
-            finish();
+            goHome();
         }
 
-        avatarChosen = AVATAR_STANDARD;
+
+        avatarChosen = AVATAR_STANDARD; //as standard, the initial avatar is the number 0 -> the standard
+        //Find all the views
+        findViews();
+
+        //set click of the different field
+        register.setOnClickListener(this);
+        signIn.setOnClickListener(this);
+        standardAvatar.setOnClickListener(this);
+
+    }
+
+    private void findViews() {
         name = (EditText) findViewById(R.id.name_register);
         surname = (EditText) findViewById(R.id.surname_register);
         email = (EditText) findViewById(R.id.email_register);
@@ -79,40 +96,38 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         register = (Button) findViewById(R.id.register_register);
         signIn = (Button) findViewById(R.id.goto_signin);
 
-        register.setOnClickListener(this);
-        signIn.setOnClickListener(this);
-        standardAvatar.setOnClickListener(this);
-
     }
 
 
     private void registerUser() {
 
-        setLineBottomNormal(name);
-        setLineBottomNormal(surname);
-        setLineBottomNormal(email);
-        setLineBottomNormal(password);
+        //we reset all the bottom lines
+        resetBottomLines();
 
         try {
 
+            //take all the input
             final String userName = name.getText().toString().trim();
             final String userSurname = surname.getText().toString().trim();
             final String userEmail = email.getText().toString().trim();
             final String userPassword = password.getText().toString().trim();
             final int userProfilePic = avatarChosen;
+
+            //create on the database the new user
             firebaseAuth.createUserWithEmailAndPassword(userEmail, userPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     db = FirebaseDatabase.getInstance().getReference();
+                    //and writes it also in the "users" JSON child
                     writeNewUser(userName, userSurname, userEmail, userPassword, userProfilePic);
-                    finish();
-                    Intent startApp = new Intent(getApplicationContext(), HomeActivity.class);
-                    startActivity(startApp);
+                    //we start the home
+                    goHome();
 
                 }
             });
 
         } catch (IllegalArgumentException e) {
+            //Security check: if there has been any mistake, we set the bottom line as red under where there has been any mistake
             if (name.getText().toString().isEmpty()) {
                 setBottomLineColor(name, R.color.colorRed);
                 Toast.makeText(getApplicationContext(), "Please fill every space", Toast.LENGTH_SHORT).show();
@@ -140,7 +155,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     private void writeNewUser(String name, String surname, String email, String password, int profilePic) {
 
         try {
-
+            //create a new user
             User user = new User(
                     firebaseAuth.getCurrentUser().getUid(),
                     name,
@@ -149,7 +164,9 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                     password,
                     profilePic);
 
+            //Write it on the "users" (UDB) JSON child under it UserID.
             db.child(UDB).child(user.getUserId()).setValue(user);
+
         } catch (NullPointerException e) {
             Toast.makeText(this, "Problem with the registration, try again later.", Toast.LENGTH_SHORT).show();
         }
@@ -168,6 +185,8 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     }
 
     private void clickOnAvatar(int avatar) {
+
+        //Check which avatar has been clicked
         standardAvatar.setImageResource(avatar);
         switch (avatar) {
             case AVATAR1:
@@ -194,14 +213,12 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
 
         if (view == register) {
-
             registerUser();
         } else if (view == signIn) {
-            finish();
-            Intent signInApp = new Intent(this, Login.class);
-            startActivity(signInApp);
+            goToLogin();
         } else if (view == standardAvatar) {
             chooseProfilePic();
+            //When it's time to choose the avatar, we set the avatar also in the preview
         } else if (view == avatar1) {
             clickOnAvatar(AVATAR1);
         } else if (view == avatar2) {
@@ -213,8 +230,16 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         }
     }
 
+    private void resetBottomLines() {
+        setLineBottomNormal(name);
+        setLineBottomNormal(surname);
+        setLineBottomNormal(email);
+        setLineBottomNormal(password);
+    }
 
-    public void setLineBottomNormal(final EditText editText) {
+    private void setLineBottomNormal(final EditText editText) {
+
+
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -236,9 +261,19 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     }
 
 
-    public void setBottomLineColor(EditText textField, int resourceColorId) {
+    private void setBottomLineColor(EditText textField, int resourceColorId) {
         textField.setBackgroundTintList(getResources().getColorStateList(resourceColorId));
     }
 
+    private void goHome() {
+        finish();
+        startActivity(new Intent(this, HomeActivity.class));
+    }
+
+    private void goToLogin() {
+        finish();
+        Intent signInApp = new Intent(this, Login.class);
+        startActivity(signInApp);
+    }
 
 }

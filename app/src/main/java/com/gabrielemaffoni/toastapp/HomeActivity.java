@@ -249,7 +249,7 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    private void setGridDesignData(final GridView grid, FriendsAdapter adapter) {
+    private void setGridDesignData(GridView grid, FriendsAdapter adapter) {
         grid.setAdapter(adapter);
         grid.setVerticalSpacing(60);
         grid.setNumColumns(3);
