@@ -39,6 +39,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -66,14 +67,23 @@ import static com.gabrielemaffoni.toastapp.utils.Static.EWHEN;
 import static com.gabrielemaffoni.toastapp.utils.Static.EYEAR;
 import static com.gabrielemaffoni.toastapp.utils.Static.FRIENDSDB;
 import static com.gabrielemaffoni.toastapp.utils.Static.REFUSED;
+import static com.gabrielemaffoni.toastapp.utils.Static.UDB;
+import static com.gabrielemaffoni.toastapp.utils.Static.UID;
+import static com.gabrielemaffoni.toastapp.utils.Static.UNAME;
+import static com.gabrielemaffoni.toastapp.utils.Static.UPROFPIC;
+import static com.gabrielemaffoni.toastapp.utils.Static.USURNAME;
 
-//TODO add notifications (check onChildChanged - or similar) - ask teacher (!IMPORTANT)
-//TODO Add personal settings(!IMPORTANT)
-//TODO Add possibility to change avatar (< IMPORTANT)
+/**
+ * This is the activity that appears in home screen after logging in or registering.
+ *
+ * @author 40284943
+ * @version 2.3a
+ */
+
 public class HomeActivity extends AppCompatActivity {
 
 
-    final ArrayList<Friend> friendArrayList = new ArrayList<>();
+    final ArrayList<Friend> friendArrayList = new ArrayList<>(); //the list of friends we are going to show in the grid
     DatabaseReference friendsDatabase;
     DatabaseReference eventsDatabase;
     private FirebaseAuth firebaseAuth;
@@ -83,42 +93,31 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+
+        //Set the view
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
         //Check if the user is logged in
         firebaseAuth = FirebaseAuth.getInstance();
 
+        //If not, we go back to the Login
         if (firebaseAuth.getCurrentUser() == null) {
-            finish();
-            Intent startApp = new Intent(this, Login.class);
-            startActivity(startApp);
+            startLogin();
         }
 
+        checkIfEventAlreadyExist(eventsDatabase, savedInstanceState);
 
         try {
+
+            //Save the current user ID
             cUID = firebaseAuth.getCurrentUser().getUid();
 
+            //Find the path to the friends and events database
             friendsDatabase = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB).child(cUID);
             eventsDatabase = FirebaseDatabase.getInstance().getReference().child(EVENTSDB).child(cUID);
 
-
-            eventsDatabase.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-
-                        downloadAndShowEventData(eventsDatabase, savedInstanceState);
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-
+            //We check on the database if there are new events
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             toolbar.setTitle(R.string.app_name);
             toolbar.inflateMenu(R.menu.menu_home);
@@ -130,8 +129,8 @@ public class HomeActivity extends AppCompatActivity {
                 public boolean onMenuItemClick(MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.add_user:
-                            Intent activity = new Intent(getApplicationContext(), SearchUser.class);
-                            startActivity(activity);
+                            Intent searchUser = new Intent(getApplicationContext(), SearchUser.class);
+                            startActivity(searchUser);
                             break;
                         case R.id.logout:
                             firebaseAuth.signOut();
@@ -143,47 +142,81 @@ public class HomeActivity extends AppCompatActivity {
 
                     }
 
+                    generateFriendsGrid(friendsDatabase, grid);
 
                     return true;
                 }
             });
 
-            friendsDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    friendArrayList.clear();
-                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                        Friend friend = postSnapshot.getValue(Friend.class);
-                        friend.setUserId(postSnapshot.getKey());
-                        friend.convertAvatar(friend.getUserProfilePic());
-                        friendArrayList.add(friend);
-                    }
-                    FriendsAdapter adapter = new FriendsAdapter(getApplicationContext(), friendArrayList);
-                    setGridDesignData(grid, adapter);
-
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
         } catch (NullPointerException e) {
-            Intent login = new Intent(this, Login.class);
-            startActivity(login);
-            finish();
+            startLogin();
             Toast.makeText(getApplicationContext(), "Sorry, problems with the database", Toast.LENGTH_SHORT).show();
         } catch (RuntimeException e) {
-            Intent login = new Intent(this, Login.class);
-            startActivity(login);
-            finish();
+            startLogin();
             Toast.makeText(getApplicationContext(), "Sorry, problems with the database", Toast.LENGTH_SHORT).show();
         }
 
     }
 
+    public void startLogin() {
+        finish();
+        Intent login = new Intent(this, Login.class);
+        startActivity(login);
+
+    }
+
+    private void checkIfEventAlreadyExist(final DatabaseReference eventsDatabase, final Bundle savedInstanceState) {
+
+        eventsDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                //If there is a new event we call the method to download it and find out if it's still active
+                if (dataSnapshot.exists()) {
+
+                    downloadAndShowEventData(eventsDatabase, savedInstanceState);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+    private void generateFriendsGrid(DatabaseReference friendsDatabase, final GridView grid) {
+
+        friendsDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                //We clear the database
+                friendArrayList.clear();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    //We download all the friends and add them to the List
+                    Friend friend = postSnapshot.getValue(Friend.class);
+                    friend.setUserId(postSnapshot.getKey());
+                    friend.convertAvatar(friend.getUserProfilePic());
+                    friendArrayList.add(friend);
+                }
+
+                //Then we show them in the grid
+                FriendsAdapter adapter = new FriendsAdapter(getApplicationContext(), friendArrayList);
+                setGridDesignData(grid, adapter);
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
 
     @Override
     public void onStart() {
@@ -295,21 +328,52 @@ public class HomeActivity extends AppCompatActivity {
 
 
     private void downloadAndShowEventData(final DatabaseReference eventsDatabase, final Bundle savedInstanceState) {
+
+        //At first we ask the database for the data
         Query eventToDownload = eventsDatabase.getRef();
 
+        //Then we add a listener to download them
         eventToDownload.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                //We check if the event is still active in the database
 
-                showEventData(dataSnapshot, savedInstanceState);
+                //We convert the data into an map
+                HashMap<String, Object> data = (HashMap<String, Object>) dataSnapshot.child(EWHEN).child(ETIME).getValue();
 
+                //We find todays date
+                Calendar today = Calendar.getInstance();
+
+                //And tomorrow's date
+                Calendar tomorrow = today;
+                tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+
+                //We check the event's date
+                GregorianCalendar eventDate = new GregorianCalendar(
+                        Integer.valueOf(String.valueOf(data.get(EYEAR))),
+                        Integer.valueOf(String.valueOf(data.get(EMONTH))),
+                        Integer.valueOf(String.valueOf(data.get(EDATE)))
+                );
+
+                //If the event is today or tomorrow, we desplay the data
+                if (today.get(Calendar.DAY_OF_MONTH) == eventDate.get(Calendar.DAY_OF_MONTH) || tomorrow.get(Calendar.DAY_OF_MONTH) == eventDate.get(Calendar.DAY_OF_MONTH)) {
+                    showEventData(dataSnapshot, savedInstanceState);
+                }
+                //Otherwise we delete from the database the event
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-
-                showEventData(dataSnapshot, savedInstanceState);
+                HashMap<String, Object> data = (HashMap<String, Object>) dataSnapshot.getValue();
+                Calendar today = Calendar.getInstance();
+                GregorianCalendar eventDate = new GregorianCalendar(
+                        Integer.valueOf(String.valueOf(data.get(EYEAR))),
+                        Integer.valueOf(String.valueOf(data.get(EMONTH))),
+                        Integer.valueOf(String.valueOf(data.get(EDATE)))
+                );
+                if (today.get(Calendar.DAY_OF_MONTH) == eventDate.get(Calendar.DAY_OF_MONTH) && today.get(Calendar.MONTH) == eventDate.get(Calendar.MONTH)) {
+                    showEventData(dataSnapshot, savedInstanceState);
+                }
 
 
             }
@@ -337,9 +401,10 @@ public class HomeActivity extends AppCompatActivity {
 
     private void showEventData(DataSnapshot dataSnapshot, Bundle savedInstanceState) {
 
-        //QUERY DATA FOR LOCATION AND TYPE
+        //If we are allowed to show the event.
         HashMap<String, Object> activeAndLocationData = (HashMap<String, Object>) dataSnapshot.getValue();
 
+        //We store all the data into the variables
         int eventActive = Integer.valueOf(String.valueOf(activeAndLocationData.get(EACTIVE)));
         String eventAddress = String.valueOf(activeAndLocationData.get(EADDRESS));
         double eventLat = Double.valueOf(String.valueOf(activeAndLocationData.get(ELAT)));
@@ -347,23 +412,28 @@ public class HomeActivity extends AppCompatActivity {
         String eventLocationName = String.valueOf(activeAndLocationData.get(ELOCATION));
         int eventType = Integer.valueOf(String.valueOf(activeAndLocationData.get(ETYPE)));
         String senderID = String.valueOf(activeAndLocationData.get(ESENDERID));
-        //QUERY DATA FOR SENDER
+
+        //We query the data of the sender
         HashMap<String, Object> receiverData = (HashMap<String, Object>) dataSnapshot.child(ERECEIVER).getValue();
 
+        //And we store them into variables
         String eventRUID = String.valueOf(receiverData.get(ERUID)); //gets the ID of the Sender
         String eventRUName = String.valueOf(receiverData.get(ERUNAME)); //gets the Name of the sender
         int eventRUProfPic = Integer.valueOf(String.valueOf(receiverData.get(ERUPRPIC))); //gets the avatar of the sender
-        String eventRUSurname = String.valueOf(receiverData.get(ERUSURNAME));
+        String eventRUSurname = String.valueOf(receiverData.get(ERUSURNAME)); //gets the surname of the sender
 
-        //QUERY DATA FOR TIME AND DATE
+        //We take the time values
         HashMap<String, Object> dateData = (HashMap<String, Object>) dataSnapshot.child(EWHEN).child(ETIME).getValue();
 
+        //We store them into variables
         int eventHour = Integer.valueOf(String.valueOf(dateData.get(EHOUR)));
         int eventMinute = Integer.valueOf(String.valueOf(dateData.get(EMINUTE)));
         int eventDate = Integer.valueOf(String.valueOf(dateData.get(EDATE)));
         int eventMonth = Integer.valueOf(String.valueOf(dateData.get(EMONTH)));
         int eventYear = Integer.valueOf(String.valueOf(dateData.get(EYEAR)));
 
+
+        //We create the sender object
         Friend sender = new Friend(
                 eventRUID,
                 eventRUName,
@@ -371,6 +441,7 @@ public class HomeActivity extends AppCompatActivity {
                 eventRUProfPic
         );
 
+        //THe date object
         GregorianCalendar date = new GregorianCalendar(
                 eventYear,
                 eventMonth,
@@ -379,6 +450,7 @@ public class HomeActivity extends AppCompatActivity {
                 eventMinute
         );
 
+        //And finally the event object
         Event downloadedEvent = new Event(
                 sender,
                 date,
@@ -391,6 +463,8 @@ public class HomeActivity extends AppCompatActivity {
                 senderID
         );
 
+
+        //We check if the sender is who is using the app right now
         boolean isSender = cUID.equals(String.valueOf(downloadedEvent.getSenderID()));
 
         showValuesOnCard(downloadedEvent, savedInstanceState, isSender);
@@ -412,51 +486,92 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void showValuesOnCard(final Event event, Bundle savedInstanceState, final boolean isSender) {
-        //Setting visibility of the include
+
+        //Setting visibility of the card
         eventExists = findViewById(R.id.event_exists);
         eventExists.setVisibility(View.VISIBLE);
 
+        //We find the card in the includer
         final CardView cardBottom = (CardView) eventExists.findViewById(R.id.total_card_notif);
 
+        //We check if the user of the phone is the sender
         if (isSender) {
+            //if so, we display just the "waiting for" display
             View waitingFor = eventExists.findViewById(R.id.waiting_for);
             waitingFor.setVisibility(View.VISIBLE);
-            if (event.getActive() == ACCEPTED) {
 
+            if (event.getActive() == ACCEPTED) {
+                //When the event's status changes, we display the total card with no buttons
                 waitingFor.setVisibility(View.GONE);
             }
 
         }
 
 
-        //finding in the view everything
+        //We find the everything in the view
         ImageView typeEvent = (ImageView) eventExists.findViewById(R.id.what_notif);
-        ImageView senderProfPic = (ImageView) eventExists.findViewById(R.id.receiver_notif);
+        final ImageView senderProfPic = (ImageView) eventExists.findViewById(R.id.receiver_notif);
         TextView day = (TextView) eventExists.findViewById(R.id.day_notif);
         TextView time = (TextView) eventExists.findViewById(R.id.time_notif);
         MapFragment map = (MapFragment) getFragmentManager().findFragmentById(R.id.map_picked_conf_notif);
         TextView whereName = (TextView) eventExists.findViewById(R.id.where_name_notif);
         TextView address = (TextView) eventExists.findViewById(R.id.where_address_notif);
 
+
         final Button accept = (Button) eventExists.findViewById(R.id.accept_notif);
         final Button iCant = (Button) eventExists.findViewById(R.id.sorry_notif);
 
+        //If the receiver accepts we hide the buttons
         if (event.getActive() == ACCEPTED) {
             accept.setVisibility(View.GONE);
             iCant.setVisibility(View.GONE);
         } else {
+            //otherwise we keep seeing them
             accept.setVisibility(View.VISIBLE);
             iCant.setVisibility(View.VISIBLE);
         }
 
         //showing the data from event downloaded
         typeEvent.setImageResource(Event.findRightImageResource(event.getType()));
-        //convert user profile picture
-        event.getReceiver().convertAvatar(event.getReceiver().getUserProfilePic());
 
-        //set user profile picture
+        //get user profile picture
+        if (isSender) {
+            event.getReceiver().convertAvatar(event.getReceiver().getUserProfilePic());
+
+        } else {
+            Query findSender = FirebaseDatabase.getInstance().getReference().child(UDB).orderByKey().equalTo(event.getSenderID());
+
+            findSender.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot senderDataSnapshot) {
+                    HashMap<String, Object> senderData = (HashMap<String, Object>) senderDataSnapshot.getValue();
+                    Friend sender = new Friend(
+                            String.valueOf(senderData.get(UID)),
+                            String.valueOf(senderData.get(UNAME)),
+                            String.valueOf(senderData.get(USURNAME)),
+                            Integer.valueOf(String.valueOf(senderData.get(UPROFPIC)))
+                    );
+                    event.setReceiver(
+                            sender
+                    );
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+        //convert and set user profile picture
+        event.getReceiver().convertAvatar(event.getReceiver().getUserProfilePic());
         senderProfPic.setImageResource(event.getReceiver().getUserProfilePic());
+
+        //We set the day
         day.setText(Event.setTodayOrTomorrow(event.getWhen()));
+
+        //We display the time
         Date timer = event.getWhen().getTime();
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
 
@@ -477,13 +592,15 @@ public class HomeActivity extends AppCompatActivity {
         whereName.setText(event.getLocation_name());
         address.setText(event.getAddress());
 
+        //if the user clicks on "Accept"
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                acceptEvent(event, iCant, accept, isSender, cardBottom);
+                acceptEvent(event, iCant, accept, isSender);
             }
         });
 
+        //else if he/she clicks on icant
         iCant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -494,7 +611,8 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-    private void acceptEvent(final Event event, final Button iCant, final Button accepted, final boolean isSender, final CardView cardBottom) {
+
+    private void acceptEvent(final Event event, final Button iCant, final Button accepted, final boolean isSender) {
         DatabaseReference accept = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
         //On sender's event
         accept.child(cUID).child(event.getReceiver().getUserId()).child(EACTIVE).setValue(ACCEPTED).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -520,7 +638,6 @@ public class HomeActivity extends AppCompatActivity {
                 if (isSender) {
                     View waitingFor = eventExists.findViewById(R.id.waiting_for);
                     waitingFor.setVisibility(View.GONE);
-
                 }
 
             }
@@ -528,11 +645,14 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
+
+    //if the user tap on "iCant", we delete the event from the database and it automatically deletes it from the app
     private void iCantEvent(Event event) {
         DatabaseReference accept = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
         accept.child(cUID).child(event.getReceiver().getUserId()).child(EACTIVE).setValue(REFUSED);//On sender's event
         accept.child(event.getReceiver().getUserId()).child(cUID).child(EACTIVE).setValue(REFUSED); //On receiver's event
         accept.child(cUID).removeValue();
+
         accept.child(event.getReceiver().getUserId()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -540,9 +660,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-
     }
-
 
 }
 

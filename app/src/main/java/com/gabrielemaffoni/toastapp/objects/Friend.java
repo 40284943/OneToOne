@@ -9,6 +9,9 @@ import static com.gabrielemaffoni.toastapp.utils.Static.AVATAR_STANDARD;
 /**
  * A class that rapresents just a single friend and not the whole users.
  * It will be important for further developings of the app.
+ *
+ * @author 40284943
+ * @version 1.3
  */
 
 public class Friend extends User {

@@ -2,10 +2,6 @@ package com.gabrielemaffoni.toastapp.utils;
 
 import com.gabrielemaffoni.toastapp.R;
 
-/**
- * Created by gabrielemaffoni on 10/03/2017.
- */
-
 public class Static {
     //AVATARS
     public final static int AVATAR_STANDARD = R.drawable.ic_user;
