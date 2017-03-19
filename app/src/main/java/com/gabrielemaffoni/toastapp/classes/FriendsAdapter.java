@@ -15,7 +15,10 @@ import java.util.ArrayList;
 
 
 /**
- * Created by gabrielemaffoni on 08/03/2017.
+ *  This adapter inflates the list of friends a user has in the database.
+ *
+ *  @author 40284943
+ *  @version 1.5
  */
 
 public class FriendsAdapter extends ArrayAdapter<Friend> {
