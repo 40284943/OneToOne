@@ -1,7 +1,5 @@
 package com.gabrielemaffoni.toastapp.utils;
 
-import android.widget.EditText;
-
 import com.gabrielemaffoni.toastapp.R;
 
 /**
@@ -9,9 +7,6 @@ import com.gabrielemaffoni.toastapp.R;
  */
 
 public class Static {
-    //BROADCAST
-    public static final String BROADCAST = "com.gabrielemaffoni.toastapp.android.action.broadcast";
-
     //AVATARS
     public final static int AVATAR_STANDARD = R.drawable.ic_user;
     public final static int AVATAR1 = R.drawable.ic_avatar_02;
@@ -24,15 +19,6 @@ public class Static {
     public static final int COCKTAIL = 2;
     public static final int COFFEE = 3;
     public static final int LUNCH = 4;
-
-    public static final String BREAKFAST = "Breakfast";
-    public static final String HALF_MORNING = "Half morning";
-    public static final String LUNCH_TIME = "Lunch";
-    public static final String AFTERNOON_BREAK = "Afternoon";
-    public static final String PRE_DINNER = "Before dinner";
-    public static final String DINNER = "Dinner";
-    public static final String AFTER_DINNER = "After dinner";
-
 
     //JSON NAMES FOR EVENT AND ITS CHILD
 
@@ -70,7 +56,7 @@ public class Static {
     public final static String UID = "userId";
     public final static String UNAME = "userName";
     public final static String USURNAME = "userSurname";
-    public final static String UPASSWORD = "userPassword";
+
     public final static String UPROFPIC = "userProfilePic";
     public final static String UEMAIL = "userEmail";
 
@@ -79,9 +65,7 @@ public class Static {
     public final static String UDB = "users";
     public final static String FRIENDSDB = "friends";
     public final static String EVENTSDB = "events";
-    public static final String ADD_USER = "Add user";
-    public static final String LOGOUT = "Logout";
-    public static final String USER_ID = "user_id";
+
 
     public static final int MAYBE = 3;
     public static final int ACCEPTED = 1;
@@ -93,7 +77,6 @@ public class Static {
 
     public static String TAG = "Places";
 
-    public static long ALARM_DELAY = 100*60;
 
 
 }

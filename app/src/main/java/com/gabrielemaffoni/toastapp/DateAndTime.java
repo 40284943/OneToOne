@@ -20,8 +20,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gabrielemaffoni.toastapp.to.Event;
-import com.gabrielemaffoni.toastapp.to.Friend;
+import com.gabrielemaffoni.toastapp.objects.Event;
+import com.gabrielemaffoni.toastapp.objects.Friend;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
@@ -471,20 +471,6 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
         });
     }
 
-
-    /*private void sendNotification(Event eventopposite, Event event) {
-        Intent sendNotification = new Intent(getContext().getApplicationContext(), NotificationService.class);
-        Bundle extras = new Bundle();
-        extras.putInt("type", event.getType());
-        extras.putString("name_sender", eventopposite.getReceiver().getUserName());
-        extras.putString("surname_sender", eventopposite.getReceiver().getUserSurname());
-        extras.putString("name_receiver", event.getReceiver().getUserName());
-        sendNotification.putExtras(extras);
-
-        getContext().sendBroadcast(sendNotification);
-
-
-    }*/
 }
 
 

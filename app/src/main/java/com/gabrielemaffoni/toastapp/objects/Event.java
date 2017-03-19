@@ -1,16 +1,20 @@
-package com.gabrielemaffoni.toastapp.to;
+package com.gabrielemaffoni.toastapp.objects;
 
 import com.gabrielemaffoni.toastapp.R;
-import com.google.android.gms.location.places.Place;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import static com.gabrielemaffoni.toastapp.utils.Static.*;
+import static com.gabrielemaffoni.toastapp.utils.Static.BEER;
+import static com.gabrielemaffoni.toastapp.utils.Static.COCKTAIL;
+import static com.gabrielemaffoni.toastapp.utils.Static.COFFEE;
+import static com.gabrielemaffoni.toastapp.utils.Static.LUNCH;
 
 /**
- * Created by gabrielemaffoni on 08/03/2017.
+ * A class that represents the single event a person is invited to.
+ *
+ * @author 40284943
+ * @version 1.4
  */
 
 public class Event {
@@ -25,10 +29,26 @@ public class Event {
     private double lon;
     private String senderID;
 
+    /**
+     * !IMPORTANT empty constructor
+     */
     public Event() {
 
     }
 
+    /**
+     * The constructor of a single event takes itself parameters that are useful in the end for the saving in the DB.
+     *
+     * @param receiver      Who is invited to the event
+     * @param when          The day and time of the event
+     * @param active        This parameter takes three different values = "1", "3" and "0". When someone invites someone else, the event is saved as "3" in the database. Once he accepts or refuses the event is saved as "1" or "0" in the database.
+     * @param type          It can take four different values: "BEER" "COCKTAIL" "LUNCH" and "COFFEE" (1,2,3,4).
+     * @param location_name The name of the location where is the meeting. Can be null.
+     * @param address       The address of the location where is the meeting. Can be null.
+     * @param lat           The latitude of the location where is the meeting. Can be null.
+     * @param lon           The longitude of the location where is the meeting. Can be null.
+     * @param senderID      Who is inviting. It's useful after to find it into the database.
+     */
     public Event(Friend receiver, GregorianCalendar when, int active, int type, String location_name, String address, double lat, double lon, String senderID) {
         this.receiver = receiver;
         this.when = when;
@@ -41,22 +61,13 @@ public class Event {
         this.senderID = senderID;
     }
 
-    public Event(Friend receiver, GregorianCalendar when, int active, int type, String location_name, String address, double lat, double lon) {
-        this.receiver = receiver;
-        this.when = when;
-        this.active = active;
-        this.type = type;
-        this.location_name = location_name;
-        this.address = address;
-        this.lat = lat;
-        this.lon = lon;
-    }
 
-
-
-    public Event(Friend receiver) {
-        this.receiver = receiver;
-    }
+    /**
+     * This method helps the app to find the right image inside the database.
+     *
+     * @param type the type of the event
+     * @return the ID of the drawable resource
+     */
 
     public static int findRightImageResource(int type) {
         //Check which event it is
@@ -79,6 +90,13 @@ public class Event {
 
         return imageResource;
     }
+
+    /**
+     * This method is useful mostly for the UX: shows the write "TODAY" or "TOMORROW" into the cardview.
+     *
+     * @param date The date of the event
+     * @return A string where is written "TODAY" or "TOMORROW" in the card.
+     */
 
     public static String setTodayOrTomorrow(GregorianCalendar date) {
         String finalDate = "";
@@ -171,15 +189,11 @@ public class Event {
         this.senderID = senderID;
     }
 
-    public void copyEvent(Event newEvent) {
-        newEvent.setReceiver(this.receiver);
-        newEvent.setLat(this.lat);
-        newEvent.setLon(this.lon);
-        newEvent.setWhen(this.when);
-        newEvent.setType(this.type);
-        newEvent.setLocation_name(this.location_name);
-        newEvent.setAddress(this.address);
-    }
+    /**
+     * This is a custom method created to copy one event to another without having any issue.
+     *
+     * @param newEvent The event where I have to copy the event caller
+     */
 
     public void copyToEventExceptFriend(Event newEvent) {
         newEvent.setLat(this.getLat());
@@ -198,7 +212,6 @@ public class Event {
                 "receiver=" + receiver +
                 ", when=" + when +
                 ", active=" + active +
-
                 ", type=" + type +
                 ", location_name='" + location_name + '\'' +
                 ", address='" + address + '\'' +

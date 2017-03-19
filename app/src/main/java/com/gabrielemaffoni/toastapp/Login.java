@@ -18,9 +18,6 @@ import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * Created by gabrielemaffoni on 09/03/2017.
- *
- *
- *
  */
 
 public class Login extends AppCompatActivity implements View.OnClickListener {
@@ -60,7 +57,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                setBottomLineColor(username,R.color.colorAccent);
+                setBottomLineColor(username, R.color.colorAccent);
             }
 
             @Override
@@ -77,7 +74,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                setBottomLineColor(username,R.color.colorAccent);
+                setBottomLineColor(username, R.color.colorAccent);
             }
 
             @Override
@@ -100,13 +97,13 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 }
             });
 
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
 
             if (username.getText().toString().isEmpty()) {
-                setBottomLineColor(username,R.color.colorRed);
+                setBottomLineColor(username, R.color.colorRed);
             }
-            if (password.getText().toString().isEmpty()){
-                setBottomLineColor(password,R.color.colorRed);
+            if (password.getText().toString().isEmpty()) {
+                setBottomLineColor(password, R.color.colorRed);
             }
             Toast.makeText(getApplicationContext(), "Please check again", Toast.LENGTH_SHORT).show();
         }
@@ -127,7 +124,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
-    public void setBottomLineColor(EditText textField, int colorResource){
+    public void setBottomLineColor(EditText textField, int colorResource) {
         textField.setBackgroundTintList(getResources().getColorStateList(colorResource));
     }
 }

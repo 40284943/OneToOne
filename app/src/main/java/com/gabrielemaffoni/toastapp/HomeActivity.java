@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,13 +18,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gabrielemaffoni.toastapp.classes.FriendsAdapter;
-import com.gabrielemaffoni.toastapp.to.Event;
-import com.gabrielemaffoni.toastapp.to.Friend;
-import com.google.android.gms.ads.MobileAds;
+import com.gabrielemaffoni.toastapp.objects.Event;
+import com.gabrielemaffoni.toastapp.objects.Friend;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -42,14 +39,33 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
-
-
-import static com.gabrielemaffoni.toastapp.utils.Static.*;
+import static com.gabrielemaffoni.toastapp.utils.Static.ACCEPTED;
+import static com.gabrielemaffoni.toastapp.utils.Static.EACTIVE;
+import static com.gabrielemaffoni.toastapp.utils.Static.EADDRESS;
+import static com.gabrielemaffoni.toastapp.utils.Static.EDATE;
+import static com.gabrielemaffoni.toastapp.utils.Static.EHOUR;
+import static com.gabrielemaffoni.toastapp.utils.Static.ELAT;
+import static com.gabrielemaffoni.toastapp.utils.Static.ELOCATION;
+import static com.gabrielemaffoni.toastapp.utils.Static.ELON;
+import static com.gabrielemaffoni.toastapp.utils.Static.EMINUTE;
+import static com.gabrielemaffoni.toastapp.utils.Static.EMONTH;
+import static com.gabrielemaffoni.toastapp.utils.Static.ERECEIVER;
+import static com.gabrielemaffoni.toastapp.utils.Static.ERUID;
+import static com.gabrielemaffoni.toastapp.utils.Static.ERUNAME;
+import static com.gabrielemaffoni.toastapp.utils.Static.ERUPRPIC;
+import static com.gabrielemaffoni.toastapp.utils.Static.ERUSURNAME;
+import static com.gabrielemaffoni.toastapp.utils.Static.ESENDERID;
+import static com.gabrielemaffoni.toastapp.utils.Static.ETIME;
+import static com.gabrielemaffoni.toastapp.utils.Static.ETYPE;
+import static com.gabrielemaffoni.toastapp.utils.Static.EVENTSDB;
+import static com.gabrielemaffoni.toastapp.utils.Static.EWHEN;
+import static com.gabrielemaffoni.toastapp.utils.Static.EYEAR;
+import static com.gabrielemaffoni.toastapp.utils.Static.FRIENDSDB;
+import static com.gabrielemaffoni.toastapp.utils.Static.REFUSED;
 
 //TODO add notifications (check onChildChanged - or similar) - ask teacher (!IMPORTANT)
 //TODO Add personal settings(!IMPORTANT)
@@ -63,7 +79,6 @@ public class HomeActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private String cUID;
     private View eventExists;
-
 
 
     @Override
@@ -88,84 +103,83 @@ public class HomeActivity extends AppCompatActivity {
             eventsDatabase = FirebaseDatabase.getInstance().getReference().child(EVENTSDB).child(cUID);
 
 
+            eventsDatabase.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
 
-        eventsDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-
-                    downloadAndShowEventData(eventsDatabase, savedInstanceState);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.app_name);
-        toolbar.inflateMenu(R.menu.menu_home);
-        final GridView grid = (GridView) findViewById(R.id.friends_list);
-
-
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.add_user:
-                        Intent activity = new Intent(getApplicationContext(), SearchUser.class);
-                        startActivity(activity);
-                        break;
-                    case R.id.logout:
-                        firebaseAuth.signOut();
-                        finish();
-                        Toast.makeText(getApplicationContext(), "You logged out", Toast.LENGTH_SHORT).show();
-                        Intent signIn = new Intent(getApplicationContext(), Login.class);
-                        startActivity(signIn);
-                        break;
-
+                        downloadAndShowEventData(eventsDatabase, savedInstanceState);
+                    }
                 }
 
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-                return true;
-            }
-        });
-
-        friendsDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                friendArrayList.clear();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Friend friend = postSnapshot.getValue(Friend.class);
-                    friend.setUserId(postSnapshot.getKey());
-                    friend.convertAvatar(friend.getUserProfilePic());
-                    friendArrayList.add(friend);
                 }
-                FriendsAdapter adapter = new FriendsAdapter(getApplicationContext(), friendArrayList);
-                setGridDesignData(grid, adapter);
+            });
 
 
-            }
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar.setTitle(R.string.app_name);
+            toolbar.inflateMenu(R.menu.menu_home);
+            final GridView grid = (GridView) findViewById(R.id.friends_list);
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+            toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.add_user:
+                            Intent activity = new Intent(getApplicationContext(), SearchUser.class);
+                            startActivity(activity);
+                            break;
+                        case R.id.logout:
+                            firebaseAuth.signOut();
+                            finish();
+                            Toast.makeText(getApplicationContext(), "You logged out", Toast.LENGTH_SHORT).show();
+                            Intent signIn = new Intent(getApplicationContext(), Login.class);
+                            startActivity(signIn);
+                            break;
 
-        } catch (NullPointerException e){
+                    }
+
+
+                    return true;
+                }
+            });
+
+            friendsDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    friendArrayList.clear();
+                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                        Friend friend = postSnapshot.getValue(Friend.class);
+                        friend.setUserId(postSnapshot.getKey());
+                        friend.convertAvatar(friend.getUserProfilePic());
+                        friendArrayList.add(friend);
+                    }
+                    FriendsAdapter adapter = new FriendsAdapter(getApplicationContext(), friendArrayList);
+                    setGridDesignData(grid, adapter);
+
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+        } catch (NullPointerException e) {
             Intent login = new Intent(this, Login.class);
             startActivity(login);
             finish();
-            Toast.makeText(getApplicationContext(),"Sorry, problems with the database",Toast.LENGTH_SHORT).show();
-        } catch (RuntimeException e){
+            Toast.makeText(getApplicationContext(), "Sorry, problems with the database", Toast.LENGTH_SHORT).show();
+        } catch (RuntimeException e) {
             Intent login = new Intent(this, Login.class);
             startActivity(login);
             finish();
-            Toast.makeText(getApplicationContext(),"Sorry, problems with the database",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Sorry, problems with the database", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -280,7 +294,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-
     private void downloadAndShowEventData(final DatabaseReference eventsDatabase, final Bundle savedInstanceState) {
         Query eventToDownload = eventsDatabase.getRef();
 
@@ -296,7 +309,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
 
-                    showEventData(dataSnapshot, savedInstanceState);
+                showEventData(dataSnapshot, savedInstanceState);
 
 
             }
@@ -381,7 +394,7 @@ public class HomeActivity extends AppCompatActivity {
         boolean isSender = cUID.equals(String.valueOf(downloadedEvent.getSenderID()));
 
         showValuesOnCard(downloadedEvent, savedInstanceState, isSender);
-}
+    }
 
     @Override
     protected void onResume() {
@@ -448,7 +461,6 @@ public class HomeActivity extends AppCompatActivity {
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
 
         time.setText(formatter.format(timer));
-
 
 
         //Showing map
@@ -530,7 +542,6 @@ public class HomeActivity extends AppCompatActivity {
 
 
     }
-
 
 
 }

@@ -9,11 +9,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.gabrielemaffoni.toastapp.to.Friend;
+import com.gabrielemaffoni.toastapp.objects.Friend;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import static com.gabrielemaffoni.toastapp.utils.Static.*;
+import static com.gabrielemaffoni.toastapp.utils.Static.AVATAR1;
+import static com.gabrielemaffoni.toastapp.utils.Static.AVATAR2;
+import static com.gabrielemaffoni.toastapp.utils.Static.AVATAR3;
+import static com.gabrielemaffoni.toastapp.utils.Static.AVATAR4;
+import static com.gabrielemaffoni.toastapp.utils.Static.AVATAR_STANDARD;
 
 /**
  * Created by gabrielemaffoni on 09/03/2017.

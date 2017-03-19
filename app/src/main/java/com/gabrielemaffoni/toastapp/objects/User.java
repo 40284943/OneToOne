@@ -1,9 +1,10 @@
-package com.gabrielemaffoni.toastapp.to;
-
-import com.gabrielemaffoni.toastapp.R;
+package com.gabrielemaffoni.toastapp.objects;
 
 /**
- * Created by gabrielemaffoni on 09/03/2017.
+ * Represents a single user.
+ *
+ * @version 1.2
+ * @author 40284943
  */
 
 public class User {
@@ -16,8 +17,10 @@ public class User {
     public String userPassword;
     public int userProfilePic;
 
+
     public User() {
     }
+
 
     public User(String userId, String userName, String userSurname, int userProfilePic) {
         this.userId = userId;
@@ -44,6 +47,15 @@ public class User {
         this.userProfilePic = userProfilePic;
     }
 
+
+    /**
+     * @param userId         His/her ID assigned by the Database in upload
+     * @param userName       The name of the user
+     * @param userSurname    The surname of the user
+     * @param userEmail      The email and username to access to the app and to find him/her
+     * @param userPassword   The password he/she access to the app with
+     * @param userProfilePic The ID of the avatar they chose
+     */
     public User(String userId, String userName, String userSurname, String userEmail, String userPassword, int userProfilePic) {
         this.userId = userId;
         this.userName = userName;
@@ -51,21 +63,6 @@ public class User {
         this.userEmail = userEmail;
         this.userPassword = userPassword;
         this.userProfilePic = userProfilePic;
-    }
-
-    public User(String userId, String userName, String userSurname, String userEmail, String userPassword) {
-        this.userId = userId;
-        this.userName = userName;
-        this.userSurname = userSurname;
-        this.userEmail = userEmail;
-        this.userPassword = userPassword;
-    }
-
-    public User(String userName, String userSurname, String userEmail, String userPassword) {
-        this.userName = userName;
-        this.userSurname = userSurname;
-        this.userEmail = userEmail;
-        this.userPassword = userPassword;
     }
 
     public String getUserId() {

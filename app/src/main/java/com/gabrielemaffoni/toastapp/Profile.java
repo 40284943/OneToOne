@@ -5,9 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.ads.formats.NativeAd;
-import com.google.android.gms.vision.text.Text;
-
 /**
  * Created by gabrielemaffoni on 15/03/2017.
  */

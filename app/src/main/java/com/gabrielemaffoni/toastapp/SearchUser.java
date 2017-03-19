@@ -2,15 +2,14 @@ package com.gabrielemaffoni.toastapp;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.SearchView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gabrielemaffoni.toastapp.to.Friend;
-import com.gabrielemaffoni.toastapp.to.User;
+import com.gabrielemaffoni.toastapp.objects.Friend;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -20,9 +19,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import java.util.HashMap;
-import java.util.Map;
 
-import static com.gabrielemaffoni.toastapp.utils.Static.*;
+import static com.gabrielemaffoni.toastapp.utils.Static.FRIENDSDB;
+import static com.gabrielemaffoni.toastapp.utils.Static.UDB;
+import static com.gabrielemaffoni.toastapp.utils.Static.UEMAIL;
+import static com.gabrielemaffoni.toastapp.utils.Static.UID;
+import static com.gabrielemaffoni.toastapp.utils.Static.UNAME;
+import static com.gabrielemaffoni.toastapp.utils.Static.UPROFPIC;
+import static com.gabrielemaffoni.toastapp.utils.Static.USURNAME;
 
 /**
  * TODO ADD JAVADOC COMMENTS

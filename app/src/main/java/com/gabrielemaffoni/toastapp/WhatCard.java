@@ -10,7 +10,10 @@ import android.widget.ImageView;
 
 import static com.gabrielemaffoni.toastapp.EventActivity.currentItem;
 import static com.gabrielemaffoni.toastapp.EventActivity.event;
-import static com.gabrielemaffoni.toastapp.utils.Static.*;
+import static com.gabrielemaffoni.toastapp.utils.Static.BEER;
+import static com.gabrielemaffoni.toastapp.utils.Static.COCKTAIL;
+import static com.gabrielemaffoni.toastapp.utils.Static.COFFEE;
+import static com.gabrielemaffoni.toastapp.utils.Static.LUNCH;
 
 
 /**

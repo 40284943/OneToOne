@@ -13,9 +13,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.gabrielemaffoni.toastapp.to.User;
-import com.gabrielemaffoni.toastapp.utils.Static;
-import com.google.android.gms.identity.intents.AddressConstants;
+import com.gabrielemaffoni.toastapp.objects.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -23,7 +21,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import static com.gabrielemaffoni.toastapp.utils.Static.*;
+import static com.gabrielemaffoni.toastapp.utils.Static.AVATAR1;
+import static com.gabrielemaffoni.toastapp.utils.Static.AVATAR2;
+import static com.gabrielemaffoni.toastapp.utils.Static.AVATAR3;
+import static com.gabrielemaffoni.toastapp.utils.Static.AVATAR4;
+import static com.gabrielemaffoni.toastapp.utils.Static.AVATAR_STANDARD;
+import static com.gabrielemaffoni.toastapp.utils.Static.UDB;
 
 
 /**
@@ -47,7 +50,6 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     private ImageView avatar4;
     private int avatarChosen;
     private RelativeLayout chooseAvatar;
-
 
 
     @Override
@@ -110,25 +112,25 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                 }
             });
 
-        } catch (IllegalArgumentException e){
-            if (name.getText().toString().isEmpty()){
-                setBottomLineColor(name,R.color.colorRed);
-                Toast.makeText(getApplicationContext(),"Please fill every space", Toast.LENGTH_SHORT).show();
+        } catch (IllegalArgumentException e) {
+            if (name.getText().toString().isEmpty()) {
+                setBottomLineColor(name, R.color.colorRed);
+                Toast.makeText(getApplicationContext(), "Please fill every space", Toast.LENGTH_SHORT).show();
             }
-            if(surname.getText().toString().isEmpty()){
-                setBottomLineColor(surname,R.color.colorRed);
-                Toast.makeText(getApplicationContext(),"Please fill every space", Toast.LENGTH_SHORT).show();
+            if (surname.getText().toString().isEmpty()) {
+                setBottomLineColor(surname, R.color.colorRed);
+                Toast.makeText(getApplicationContext(), "Please fill every space", Toast.LENGTH_SHORT).show();
 
             }
 
-            if (email.getText().toString().isEmpty()){
-                setBottomLineColor(email,R.color.colorRed);
-                Toast.makeText(getApplicationContext(),"Please fill every space", Toast.LENGTH_SHORT).show();
+            if (email.getText().toString().isEmpty()) {
+                setBottomLineColor(email, R.color.colorRed);
+                Toast.makeText(getApplicationContext(), "Please fill every space", Toast.LENGTH_SHORT).show();
 
             }
-            if (password.getText().toString().isEmpty()){
+            if (password.getText().toString().isEmpty()) {
                 setBottomLineColor(password, R.color.colorRed);
-                Toast.makeText(getApplicationContext(),"Please fill every space", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Please fill every space", Toast.LENGTH_SHORT).show();
 
             }
         }
@@ -148,7 +150,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                     profilePic);
 
             db.child(UDB).child(user.getUserId()).setValue(user);
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             Toast.makeText(this, "Problem with the registration, try again later.", Toast.LENGTH_SHORT).show();
         }
 
@@ -167,7 +169,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
     private void clickOnAvatar(int avatar) {
         standardAvatar.setImageResource(avatar);
-        switch (avatar){
+        switch (avatar) {
             case AVATAR1:
                 avatarChosen = 1;
                 break;
@@ -212,7 +214,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     }
 
 
-    public void setLineBottomNormal(final EditText editText){
+    public void setLineBottomNormal(final EditText editText) {
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -221,7 +223,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    setBottomLineColor(editText,R.color.colorAccent);
+                setBottomLineColor(editText, R.color.colorAccent);
             }
 
             @Override
@@ -234,7 +236,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     }
 
 
-    public void setBottomLineColor(EditText textField, int resourceColorId){
+    public void setBottomLineColor(EditText textField, int resourceColorId) {
         textField.setBackgroundTintList(getResources().getColorStateList(resourceColorId));
     }
 
