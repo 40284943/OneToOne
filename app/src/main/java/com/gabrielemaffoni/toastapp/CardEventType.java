@@ -17,19 +17,22 @@ import static com.gabrielemaffoni.toastapp.utils.Static.LUNCH;
 
 
 /**
- * Created by gabrielemaffoni on 08/03/2017.
+ * This fragment shows four buttons to rapidly choose what you want to take with your friend.
+ *
+ * @author 40284943
+ * @version 2.0
  */
 
-public class WhatCard extends Fragment implements View.OnClickListener {
+public class CardEventType extends Fragment implements View.OnClickListener {
 
     private ImageView beer;
     private ImageView cocktail;
     private ImageView coffee;
     private ImageView lunch;
 
-    public static WhatCard newInstance(Bundle args) {
+    public static CardEventType newInstance(Bundle args) {
         currentItem = 0;
-        WhatCard fragment = new WhatCard();
+        CardEventType fragment = new CardEventType();
         fragment.setArguments(args);
         return fragment;
     }
@@ -37,15 +40,9 @@ public class WhatCard extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.what_card, container, false);
-        beer = (ImageView) rootView.findViewById(R.id.beer);
-        cocktail = (ImageView) rootView.findViewById(R.id.cocktail);
-        coffee = (ImageView) rootView.findViewById(R.id.coffee);
-        lunch = (ImageView) rootView.findViewById(R.id.lunch);
 
-        beer.setImageResource(R.drawable.ic_beer);
-        cocktail.setImageResource(R.drawable.ic_cocktail);
-        coffee.setImageResource(R.drawable.ic_coffee);
-        lunch.setImageResource(R.drawable.ic_lunch);
+
+        findViewsAndSetData(rootView);
 
         beer.setOnClickListener(this);
         cocktail.setOnClickListener(this);
@@ -55,11 +52,24 @@ public class WhatCard extends Fragment implements View.OnClickListener {
         return rootView;
     }
 
+    private void findViewsAndSetData(ViewGroup rootView) {
+        beer = (ImageView) rootView.findViewById(R.id.beer);
+        cocktail = (ImageView) rootView.findViewById(R.id.cocktail);
+        coffee = (ImageView) rootView.findViewById(R.id.coffee);
+        lunch = (ImageView) rootView.findViewById(R.id.lunch);
+
+        beer.setImageResource(R.drawable.ic_beer);
+        cocktail.setImageResource(R.drawable.ic_cocktail);
+        coffee.setImageResource(R.drawable.ic_coffee);
+        lunch.setImageResource(R.drawable.ic_lunch);
+    }
+
     @Override
     public void onClick(View v) {
 
-        DateAndTime when = new DateAndTime();
-        int typeToPut = 0;
+        CardPlaceAndDate when = new CardPlaceAndDate();
+        int typeToPut;
+
         //Pass the type of event and the data of the participant
         Bundle args = getArguments();
 
@@ -84,7 +94,7 @@ public class WhatCard extends Fragment implements View.OnClickListener {
         event.setType(typeToPut);
         when.setArguments(args);
 
-        //start transaction
+        //Switch to the other card
         FragmentTransaction manager = getFragmentManager().beginTransaction();
         ((EventActivity) getActivity()).setCurrentItem(1, true);
         manager.addToBackStack("Transaction1");

@@ -23,7 +23,12 @@ import com.google.firebase.database.DatabaseReference;
 import static com.gabrielemaffoni.toastapp.utils.Static.IS_PRESSED;
 
 /**
- * Created by gabrielemaffoni on 08/03/2017.
+ * This activity appears when someone clicks on a friend to invite him over.
+ * It has two fragments displayed on the viewpager: the card of the type of the event and the place and date of the type of the event.
+ *
+ *
+ * @author 40284943
+ * @version 2.3
  */
 
 
@@ -40,8 +45,6 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
     private String nameInvited;
     private String surnameInvited;
     private String invitedId;
-    private FirebaseAuth firebaseAuth;
-    private DatabaseReference db;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,7 +52,7 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.single_event_layout);
 
-
+        //we create a new event
         event = new Event();
 
         //get the name and the cover image of the person chosen
@@ -60,7 +63,8 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
                 previousIntent.getString("surname"),
                 previousIntent.getInt("profile_picture")
         );
-        Log.d("UID received", receiver.getUserId());
+
+        //Set views
         profilePic = receiver.getUserProfilePic();
         nameInvited = receiver.getUserName();
         surnameInvited = receiver.getUserSurname();
@@ -68,20 +72,22 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
 
         event.setReceiver(receiver);
 
-        Log.d("UID event", event.getReceiver().getUserId());
-
+        //We initialize maps for the second Fragment
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Places.GEO_DATA_API)
                 .addApi(Places.PLACE_DETECTION_API)
                 .enableAutoManage(this, this)
                 .build();
 
-
+        //intialize the views and set what we need
         viewPager = (ViewPager) findViewById(R.id.cards);
         ImageView profilePicChosen = (ImageView) findViewById(R.id.profile_pic_chosen);
         TextView nameChosen = (TextView) findViewById(R.id.name_invited);
+
         profilePicChosen.setImageResource(profilePic);
         nameChosen.setText(nameInvited);
+
+        //we start the fragments
         adapter = new Adapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
 
@@ -98,17 +104,16 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
         //The overridden method checks before if we are already at the end of the process of selecting all the appointments data
         if (IS_PRESSED) {
 
-        /*
-        If so, it goes to the previous visualisation
-         */
+            // If so, it goes to the previous visualisation
+
 
             View preConfirmation = findViewById(R.id.preconfirmation_layout);
             preConfirmation.setVisibility(View.GONE);
             IS_PRESSED = false;
 
-        /*
-        Otherwise its behaviours are normal.
-         */
+
+            //Otherwise its behaviours are normal.
+
         } else {
             int count = viewPager.getCurrentItem();
             if (count == 1) {
@@ -144,11 +149,11 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
                     argsEvent.putString("receiver_name", nameInvited);
                     argsEvent.putString("receiver_surname", surnameInvited);
                     argsEvent.putString("receiver_ID", invitedId);
-                    return WhatCard.newInstance(argsEvent);
+                    return CardEventType.newInstance(argsEvent);
 
                 case 1:
                     Bundle argsDateAndTime = new Bundle();
-                    return DateAndTime.newInstance(argsDateAndTime);
+                    return CardPlaceAndDate.newInstance(argsDateAndTime);
 
                 default:
                     Bundle args = new Bundle();
@@ -156,7 +161,7 @@ public class EventActivity extends FragmentActivity implements GoogleApiClient.O
                     args.putString("receiver_name", nameInvited);
                     args.putString("receiver_surname", surnameInvited);
                     args.putString("receiver_ID", invitedId);
-                    return WhatCard.newInstance(args);
+                    return CardEventType.newInstance(args);
             }
 
 

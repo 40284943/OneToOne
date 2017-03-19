@@ -106,7 +106,7 @@ public class HomeActivity extends AppCompatActivity {
             startLogin();
         }
 
-        checkIfEventAlreadyExist(eventsDatabase, savedInstanceState);
+
 
         try {
 
@@ -116,6 +116,8 @@ public class HomeActivity extends AppCompatActivity {
             //Find the path to the friends and events database
             friendsDatabase = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB).child(cUID);
             eventsDatabase = FirebaseDatabase.getInstance().getReference().child(EVENTSDB).child(cUID);
+
+            checkIfEventAlreadyExist(eventsDatabase, savedInstanceState);
 
             //We check on the database if there are new events
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

@@ -67,12 +67,13 @@ import static com.gabrielemaffoni.toastapp.utils.Static.USURNAME;
 
 
 /**
+ *  This fragment contains also a view of a Map in Lite Mde and the Autocomplete module of Google Places API.
  *
- *
- *
+ *  @author 40284943
+ *  @version 2.6
  */
 
-public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedListener {
+public class CardPlaceAndDate extends Fragment implements AdapterView.OnItemSelectedListener {
 
 
     private static String HALF_HOUR = "30";
@@ -97,10 +98,10 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
 
     private Place place;
 
-    //NEw instance to navigate through the adapterview
-    public static DateAndTime newInstance(Bundle args) {
+    //New instance to navigate through the adapterview
+    public static CardPlaceAndDate newInstance(Bundle args) {
         currentItem = 1;
-        DateAndTime fragment = new DateAndTime();
+        CardPlaceAndDate fragment = new CardPlaceAndDate();
         fragment.setArguments(args);
         return fragment;
     }
@@ -108,16 +109,17 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
+
         //Inflate the data in the adapterview
         final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.date_time_location_alt, container, false);
 
+        //connects to the database
         firebaseAuth = FirebaseAuth.getInstance();
         db = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
         currentUserId = firebaseAuth.getCurrentUser().getUid();
 
 
-        receiver = new Friend();
-        receiver.setUserId(event.getReceiver().getUserId());
+        receiver = event.getReceiver();
 
         //get all the arguments from the previous fragment
         Bundle args = getArguments();
@@ -125,12 +127,10 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
 
         //find in the View the elements
         findIntialElements(rootView, savedInstanceState);
-
         getCurrentSelectedDate(day, time);
 
         //set the final date of the event
         event.setWhen(dayChosen);
-
         setWhere();
 
         showPreconfirmationCard(okay, savedInstanceState);
@@ -144,7 +144,6 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-
                     //opens the activity to find the right location
                     try {
                         Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN).build(getActivity());
@@ -330,11 +329,12 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
     }
 
     public void showPreconfirmationCard(FloatingActionButton button, final Bundle savedInstanceState) {
-
+        //if they click on the floating button
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                //we show the confirmation
                 View preConfirmation = getView().getRootView().findViewById(R.id.preconfirmation_layout);
                 ImageView what = (ImageView) preConfirmation.findViewById(R.id.what);
                 ImageView receiverProfilePic = (ImageView) preConfirmation.findViewById(R.id.receiver);
@@ -344,7 +344,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
                 TextView whereAddress = (TextView) preConfirmation.findViewById(R.id.where_address);
                 MapFragment mapPicked = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map_picked_conf);
                 Button done = (Button) preConfirmation.findViewById(R.id.done);
-                IS_PRESSED = true;
+                IS_PRESSED = true;  //this boolean will be useful after for the onBackPressed method
 
                 //Set the event image
                 what.setImageResource(Event.findRightImageResource(event.getType()));
@@ -355,6 +355,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
                 Date timer = event.getWhen().getTime();
                 SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
                 time.setText(formatter.format(timer));
+
 
                 try {
 
@@ -373,7 +374,7 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
 
                 } catch (NullPointerException e) {
                     CardView mapIf = (CardView) preConfirmation.findViewById(R.id.where_map);
-                    mapIf.setVisibility(View.INVISIBLE);
+                    mapIf.setVisibility(View.GONE);
                 }
 
 
@@ -400,24 +401,26 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
 
     private void setDatabaseUser() {
 
-        //add the person invited to the database
-
+        //add the event created to the database of the current user
         try {
             db.child(currentUserId).child(event.getReceiver().getUserId()).setValue(event);
         } catch (DatabaseException e) {
-
+            //
         }
 
-        //now the opposite, to add to the database of the person who invites the event
+        //now the opposite, add to the database of the one invited the opposite event, changing the data inside the event
 
-
+        //let's find the database
         DatabaseReference usersDatabase = FirebaseDatabase.getInstance().getReference().child(UDB);
 
         //we search the data of the current user in our database
         Query findCurrentUserToAdd = usersDatabase.orderByKey().equalTo(currentUserId);
+
+
         findCurrentUserToAdd.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                //we don't need to check if it exists
                 HashMap<String, Object> searcher = (HashMap<String, Object>) dataSnapshot.getValue();
 
                 String finalSearcherName = String.valueOf(searcher.get(UNAME));
@@ -434,13 +437,16 @@ public class DateAndTime extends Fragment implements AdapterView.OnItemSelectedL
                         finalProfilePic
                 );
 
+                //therefore we create a new event that's exactly like the one we already have
                 Event eventOpposite = new Event();
                 event.copyToEventExceptFriend(eventOpposite);
+
+                //but we change the receiver
                 eventOpposite.setReceiver(friendWhoSearched);
 
-                DatabaseReference databaseToAddTheOpposite = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
-
-                databaseToAddTheOpposite.child(event.getReceiver().getUserId()).child(currentUserId).setValue(eventOpposite);
+                //Then we add everything to the database
+                DatabaseReference databaseToAddTheOppositeEvent = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
+                databaseToAddTheOppositeEvent.child(event.getReceiver().getUserId()).child(currentUserId).setValue(eventOpposite);
                 Toast.makeText(getContext().getApplicationContext(), "Event created", Toast.LENGTH_SHORT).show();
 
                 //sendNotification(eventOpposite, event);
