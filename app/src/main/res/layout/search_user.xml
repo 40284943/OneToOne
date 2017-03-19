@@ -17,7 +17,7 @@
         android:id="@+id/foundUser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="invisible">
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/nameUserFound"
@@ -39,4 +39,12 @@
             android:text="Add" />
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/user_not_found"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/user_not_found"
+        android:visibility="gone" />
 </LinearLayout>

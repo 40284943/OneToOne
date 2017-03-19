@@ -6,7 +6,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * Created by gabrielemaffoni on 15/03/2017.
+ * This activity shows the basic info of a selected friend from a list
+ *
+ * @author 40284943
+ * @version 1.0
  */
 
 public class Profile extends AppCompatActivity {
@@ -21,8 +24,10 @@ public class Profile extends AppCompatActivity {
         setContentView(R.layout.single_profile);
 
         Bundle home = getIntent().getExtras();
-        findVisualComponents();
-        setValueVisualComponents(
+
+        findViews();
+
+        setData(
                 home.getInt("avatar"),
                 home.getString("name"),
                 home.getString("surname"),
@@ -31,14 +36,14 @@ public class Profile extends AppCompatActivity {
 
     }
 
-    public void findVisualComponents() {
+    private void findViews() {
         profilePicture = (ImageView) findViewById(R.id.avatar_friend);
         name = (TextView) findViewById(R.id.name_friend);
         surname = (TextView) findViewById(R.id.surname_friend);
         email = (TextView) findViewById(R.id.email_friend);
     }
 
-    public void setValueVisualComponents(int avatar, String nameFriend, String surnameFriend, String emailFriend) {
+    private void setData(int avatar, String nameFriend, String surnameFriend, String emailFriend) {
         profilePicture.setImageResource(avatar);
         name.setText(nameFriend);
         surname.setText(surnameFriend);

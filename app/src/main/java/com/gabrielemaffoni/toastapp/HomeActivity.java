@@ -129,15 +129,10 @@ public class HomeActivity extends AppCompatActivity {
                 public boolean onMenuItemClick(MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.add_user:
-                            Intent searchUser = new Intent(getApplicationContext(), SearchUser.class);
-                            startActivity(searchUser);
+                            searchUser();
                             break;
                         case R.id.logout:
-                            firebaseAuth.signOut();
-                            finish();
-                            Toast.makeText(getApplicationContext(), "You logged out", Toast.LENGTH_SHORT).show();
-                            Intent signIn = new Intent(getApplicationContext(), Login.class);
-                            startActivity(signIn);
+                            logOut();
                             break;
 
                     }
@@ -156,6 +151,19 @@ public class HomeActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Sorry, problems with the database", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private void logOut() {
+        firebaseAuth.signOut();
+        finish();
+        Toast.makeText(getApplicationContext(), "You logged out", Toast.LENGTH_SHORT).show();
+        Intent signIn = new Intent(getApplicationContext(), Login.class);
+        startActivity(signIn);
+    }
+
+    private void searchUser() {
+        Intent searchUser = new Intent(getApplicationContext(), SearchUser.class);
+        startActivity(searchUser);
     }
 
     public void startLogin() {

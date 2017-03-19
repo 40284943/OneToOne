@@ -29,7 +29,10 @@ import static com.gabrielemaffoni.toastapp.utils.Static.UPROFPIC;
 import static com.gabrielemaffoni.toastapp.utils.Static.USURNAME;
 
 /**
- * TODO ADD JAVADOC COMMENTS
+ * This activity permits to add a user searching him/her by its email in the JSON database.
+ *
+ * @author 40284943
+ * @version 1.2
  */
 
 public class SearchUser extends AppCompatActivity {
@@ -45,46 +48,42 @@ public class SearchUser extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_user);
+
+        //we connect to the database
         firebaseAuth = FirebaseAuth.getInstance();
+        //and we find the "users" child in it
         db = FirebaseDatabase.getInstance().getReference().child(UDB);
 
         final String currentUserId = firebaseAuth.getCurrentUser().getUid();
 
-        searchView = (SearchView) findViewById(R.id.userSearch);
-        foundUserSection = (RelativeLayout) findViewById(R.id.foundUser);
+        findViews();
 
+        //After the user press enter, we search on the database if there is a user
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                foundUserSection.setVisibility(View.VISIBLE);
-                userFoundName = (TextView) findViewById(R.id.nameUserFound);
 
-                Query findFriendByEmail = db.orderByChild(UEMAIL).equalTo(searchView.getQuery().toString());
+                final Query findFriendByEmail = db.orderByChild(UEMAIL).equalTo(searchView.getQuery().toString());
 
                 findFriendByEmail.addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                        HashMap<String, Object> users = (HashMap<String, Object>) dataSnapshot.getValue();
 
-                        userFoundName.setText(String.valueOf(users.get(UNAME)) + " " + String.valueOf(users.get(USURNAME)));
-                        addUser = (Button) findViewById(R.id.addUserFound);
-                        String finalEmail = String.valueOf(users.get(UEMAIL));
-                        String finalName = String.valueOf(users.get(UNAME));
-                        String finalSurname = String.valueOf(users.get(USURNAME));
-                        String finalUserId = String.valueOf(users.get(UID));
-                        int finalProfilePic = Integer.parseInt(
-                                String.valueOf(users.get(UPROFPIC))
-                        );
+                        //if the friend exists, show the data
+                        if (dataSnapshot.exists()) {
 
-                        Friend friend = new Friend(
+                            foundUserSection.setVisibility(View.VISIBLE);
+                            userFoundName = (TextView) findViewById(R.id.nameUserFound);
 
-                                finalName,
-                                finalSurname,
-                                finalProfilePic
-                        );
-                        friend.setUserEmail(finalEmail);
-                        friend.convertAvatar(friend.getUserProfilePic());
-                        addUserMethod(addUser, currentUserId, finalUserId, friend, db);
+                            Friend receiver = downloadUserData(dataSnapshot);
+
+                            addUserMethod(addUser, currentUserId, receiver.getUserId(), receiver, db);
+                        }
+                        //otherwise tell the user that it doesn't exist
+                        else {
+                            TextView userNotFound = (TextView) findViewById(R.id.user_not_found);
+                            userNotFound.setVisibility(View.VISIBLE);
+                        }
                     }
 
                     @Override
@@ -119,15 +118,47 @@ public class SearchUser extends AppCompatActivity {
 
     }
 
+    private Friend downloadUserData(DataSnapshot dataSnapshot) {
 
-    private void addUserMethod(Button addUser, final String searcherId, final String userFound, final Friend friendToAdd, final DatabaseReference db) {
+        HashMap<String, Object> users = (HashMap<String, Object>) dataSnapshot.getValue();
+
+        userFoundName.setText(String.valueOf(users.get(UNAME)) + " " + String.valueOf(users.get(USURNAME)));
+        addUser = (Button) findViewById(R.id.addUserFound);
+
+        String finalEmail = String.valueOf(users.get(UEMAIL));
+        String finalName = String.valueOf(users.get(UNAME));
+        String finalSurname = String.valueOf(users.get(USURNAME));
+        String finalUserId = String.valueOf(users.get(UID));
+        int finalProfilePic = Integer.parseInt(
+                String.valueOf(users.get(UPROFPIC))
+        );
+
+        Friend friend = new Friend(
+                finalUserId,
+                finalName,
+                finalSurname,
+                finalProfilePic
+        );
+        friend.setUserEmail(finalEmail);
+        friend.convertAvatar(friend.getUserProfilePic());
+
+        return friend;
+
+    }
+
+
+    private void addUserMethod(Button addUser, final String searcherId, final String userFoundId, final Friend friendToAdd, final DatabaseReference db) {
         addUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //We find the "friends" database
                 final DatabaseReference dbToAddFriendIn = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB);
-                dbToAddFriendIn.child(searcherId).child(userFound).setValue(friendToAdd);
 
+                //And we add it to the current user id
+                dbToAddFriendIn.child(searcherId).child(userFoundId).setValue(friendToAdd);
 
+                //Then we do the opposite, looking for the data in the users database
                 Query findCurrentUserToAdd = db.orderByKey().equalTo(searcherId);
                 findCurrentUserToAdd.addChildEventListener(new ChildEventListener() {
                     @Override
@@ -150,8 +181,8 @@ public class SearchUser extends AppCompatActivity {
                         friendWhoSearched.convertAvatar(finalProfilePic);
                         friendWhoSearched.setUserEmail(finalSearcherEmail);
 
-
-                        dbToAddFriendIn.child(userFound).child(searcherId).setValue(friendWhoSearched);
+                        //and we add it to the added user's "friends" database
+                        dbToAddFriendIn.child(userFoundId).child(searcherId).setValue(friendWhoSearched);
 
 
                     }
@@ -177,9 +208,17 @@ public class SearchUser extends AppCompatActivity {
 
                     }
                 });
+
+                //we finish this activity and go back to "home"
                 finish();
                 Toast.makeText(getApplicationContext(), friendToAdd.getUserName() + " has been added", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void findViews() {
+
+        searchView = (SearchView) findViewById(R.id.userSearch);
+        foundUserSection = (RelativeLayout) findViewById(R.id.foundUser);
     }
 }

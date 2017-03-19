@@ -41,7 +41,7 @@
     <string name="waiting_for_answer">Waiting for an answer</string>
     <string name="broadcast_name">com.gabrielemaffoni.toastapp.android.action.broadcast</string>
 
-
+    <string name="user_not_found">User not found. Please, check again.</string>
     <!-- Strings related to Preference -->
     <string name="pref_file_name">preferences</string>
     <string name="pref_account">Account</string>
