@@ -119,13 +119,15 @@ public class HomeActivity extends AppCompatActivity {
             friendsDatabase = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB).child(cUID);
 
             DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-            db.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            //Checking if events child exists
+            db.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                     if (dataSnapshot.hasChild(EVENTSDB)) {
+                        //if it exists, we go inside and check if there is any event of the current user
                         eventsDatabase = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
-
                         checkIfEventAlreadyExist(eventsDatabase, savedInstanceState);
                     }
                 }
@@ -204,7 +206,6 @@ public class HomeActivity extends AppCompatActivity {
 
                 //If there is a new event we call the method to download it and find out if it's still active
                 if (dataSnapshot.hasChild(cUID)) {
-
                     downloadAndShowEventData(eventsDatabase, savedInstanceState);
 
                 }
@@ -362,12 +363,13 @@ public class HomeActivity extends AppCompatActivity {
 
     private void downloadAndShowEventData(final DatabaseReference eventsDatabase, final Bundle savedInstanceState) {
 
-        Query evenToDownload = eventsDatabase.child(cUID).getRef();
+        final Query evenToDownload = eventsDatabase.child(cUID).getRef();
 
         evenToDownload.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
+                //We check first of all if the date is not already expired.
                 Calendar today = Calendar.getInstance();
                 Calendar tomorrow = Calendar.getInstance();
                 tomorrow.add(Calendar.DAY_OF_MONTH, 1);
@@ -377,8 +379,17 @@ public class HomeActivity extends AppCompatActivity {
                 int todayInt = today.get(Calendar.DAY_OF_MONTH);
                 int tomorrowInt = tomorrow.get(Calendar.DAY_OF_MONTH);
 
+                //If it's still active we show event data
                 if (eventDate == todayInt || eventDate == tomorrowInt) {
                     showEventData(dataSnapshot, savedInstanceState);
+                } else {
+                    eventsDatabase.child(cUID).removeValue(new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            eventExists = findViewById(R.id.event_exists);
+                            eventExists.setVisibility(View.GONE);
+                        }
+                    });
                 }
             }
 
