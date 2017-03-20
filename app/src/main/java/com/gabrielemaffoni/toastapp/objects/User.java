@@ -47,6 +47,13 @@ public class User {
         this.userProfilePic = userProfilePic;
     }
 
+    public User(String userId, String userName, String userSurname, String userEmail, int userProfilePic) {
+        this.userId = userId;
+        this.userName = userName;
+        this.userSurname = userSurname;
+        this.userEmail = userEmail;
+        this.userProfilePic = userProfilePic;
+    }
 
     /**
      * @param userId         His/her ID assigned by the Database in upload

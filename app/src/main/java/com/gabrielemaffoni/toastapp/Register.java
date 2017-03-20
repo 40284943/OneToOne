@@ -119,7 +119,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     db = FirebaseDatabase.getInstance().getReference();
                     //and writes it also in the "users" JSON child
-                    writeNewUser(userName, userSurname, userEmail, userPassword, userProfilePic);
+                    writeNewUser(userName, userSurname, userEmail, userProfilePic);
                     //we start the home
                     goHome();
 
@@ -152,7 +152,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
     }
 
-    private void writeNewUser(String name, String surname, String email, String password, int profilePic) {
+    private void writeNewUser(String name, String surname, String email, int profilePic) {
 
         try {
             //create a new user
@@ -161,7 +161,6 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                     name,
                     surname,
                     email,
-                    password,
                     profilePic);
 
             //Write it on the "users" (UDB) JSON child under it UserID.
