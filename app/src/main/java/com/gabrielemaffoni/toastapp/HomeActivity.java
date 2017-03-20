@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -177,10 +178,11 @@ public class HomeActivity extends AppCompatActivity {
 
     private void logOut() {
         firebaseAuth.signOut();
-        finish();
-        Toast.makeText(getApplicationContext(), "You logged out", Toast.LENGTH_SHORT).show();
         Intent signIn = new Intent(getApplicationContext(), Login.class);
         startActivity(signIn);
+        finish();
+        Toast.makeText(getApplicationContext(), "You logged out", Toast.LENGTH_SHORT).show();
+
     }
 
     private void searchUser() {
@@ -417,8 +419,6 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
-                eventExists.findViewById(R.id.event_exists);
-                eventExists.setVisibility(View.GONE);
             }
         });
 
@@ -567,18 +567,20 @@ public class HomeActivity extends AppCompatActivity {
             event.getReceiver().convertAvatar(event.getReceiver().getUserProfilePic());
 
         } else {
-            Query findSender = FirebaseDatabase.getInstance().getReference().child(UDB).orderByKey().equalTo(event.getSenderID());
+            Query findSender = FirebaseDatabase.getInstance().getReference().child(UDB).child(event.getSenderID());
 
             findSender.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot senderDataSnapshot) {
                     HashMap<String, Object> senderData = (HashMap<String, Object>) senderDataSnapshot.getValue();
+                    int profilePic = Integer.valueOf(String.valueOf(senderData.get(UPROFPIC)));
                     Friend sender = new Friend(
                             String.valueOf(senderData.get(UID)),
                             String.valueOf(senderData.get(UNAME)),
-                            String.valueOf(senderData.get(USURNAME)),
-                            Integer.valueOf(String.valueOf(senderData.get(UPROFPIC)))
+                            String.valueOf(senderData.get(USURNAME))
+
                     );
+                    sender.convertAvatar(profilePic);
                     event.setReceiver(
                             sender
                     );

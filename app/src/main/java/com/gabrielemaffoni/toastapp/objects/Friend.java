@@ -69,8 +69,7 @@ public class Friend extends User {
             case 4:
                 this.setUserProfilePic(AVATAR4);
                 break;
-            default:
-                this.setUserProfilePic(AVATAR_STANDARD);
+
         }
     }
 

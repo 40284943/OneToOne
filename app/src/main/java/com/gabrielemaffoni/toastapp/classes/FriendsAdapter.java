@@ -62,6 +62,7 @@ public class FriendsAdapter extends ArrayAdapter<Friend> {
         name.setText(friend.getUserName());
         surname.setText(friend.getUserSurname());
         userId.setText(friend.getUserId());
+        friend.convertAvatar(friend.getUserProfilePic());
         avatar.setImageResource(friend.getUserProfilePic());
 
 

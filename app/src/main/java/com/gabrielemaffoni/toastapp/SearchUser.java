@@ -1,6 +1,7 @@
 package com.gabrielemaffoni.toastapp;
 
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -62,7 +63,7 @@ public class SearchUser extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-
+                //we search the user by email
                 final Query findFriendByEmail = db.orderByChild(UEMAIL).equalTo(searchView.getQuery().toString());
 
                 findFriendByEmail.addChildEventListener(new ChildEventListener() {
@@ -128,7 +129,7 @@ public class SearchUser extends AppCompatActivity {
         String finalEmail = String.valueOf(users.get(UEMAIL));
         String finalName = String.valueOf(users.get(UNAME));
         String finalSurname = String.valueOf(users.get(USURNAME));
-        String finalUserId = String.valueOf(users.get(UID));
+        String finalUserId = String.valueOf(dataSnapshot.getKey());
         int finalProfilePic = Integer.parseInt(
                 String.valueOf(users.get(UPROFPIC))
         );
@@ -140,7 +141,7 @@ public class SearchUser extends AppCompatActivity {
                 finalProfilePic
         );
         friend.setUserEmail(finalEmail);
-        friend.convertAvatar(friend.getUserProfilePic());
+
 
         return friend;
 
@@ -156,14 +157,14 @@ public class SearchUser extends AppCompatActivity {
                 final DatabaseReference dbToAddFriendIn = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB);
 
                 //And we add it to the current user id
-                dbToAddFriendIn.child(searcherId).child(userFoundId).setValue(friendToAdd);
+                dbToAddFriendIn.child(searcherId).child(friendToAdd.getUserId()).setValue(friendToAdd);
 
                 //Then we do the opposite, looking for the data in the users database
                 Query findCurrentUserToAdd = db.orderByKey().equalTo(searcherId);
                 findCurrentUserToAdd.addChildEventListener(new ChildEventListener() {
                     @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                        HashMap<String, Object> searcher = (HashMap<String, Object>) dataSnapshot.getValue();
+                    public void onChildAdded(DataSnapshot snapshot, String s) {
+                        HashMap<String, Object> searcher = (HashMap<String, Object>) snapshot.getValue();
 
                         String finalSearcherEmail = String.valueOf(searcher.get(UEMAIL));
                         String finalSearcherName = String.valueOf(searcher.get(UNAME));
@@ -176,13 +177,15 @@ public class SearchUser extends AppCompatActivity {
                         Friend friendWhoSearched = new Friend(
                                 finalSearcherId,
                                 finalSearcherName,
-                                finalSearcherSurname
+                                finalSearcherSurname,
+                                finalProfilePic
                         );
-                        friendWhoSearched.convertAvatar(finalProfilePic);
+
                         friendWhoSearched.setUserEmail(finalSearcherEmail);
 
                         //and we add it to the added user's "friends" database
-                        dbToAddFriendIn.child(userFoundId).child(searcherId).setValue(friendWhoSearched);
+                        DatabaseReference secondFriendDb = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB).child(friendToAdd.getUserId());
+                        secondFriendDb.child(searcherId).setValue(friendWhoSearched);
 
 
                     }

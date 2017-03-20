@@ -70,7 +70,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         }
 
 
-        avatarChosen = AVATAR_STANDARD; //as standard, the initial avatar is the number 0 -> the standard
+        avatarChosen = 0; //as standard, the initial avatar is the number 0 -> the standard
         //Find all the views
         findViews();
 
@@ -111,7 +111,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
             final String userSurname = surname.getText().toString().trim();
             final String userEmail = email.getText().toString().trim();
             final String userPassword = password.getText().toString().trim();
-            final int userProfilePic = avatarChosen;
+
 
             //create on the database the new user
             firebaseAuth.createUserWithEmailAndPassword(userEmail, userPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -119,7 +119,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     db = FirebaseDatabase.getInstance().getReference();
                     //and writes it also in the "users" JSON child
-                    writeNewUser(userName, userSurname, userEmail, userProfilePic);
+                    writeNewUser(userName, userSurname, userEmail, avatarChosen);
                     //we start the home
                     goHome();
 
@@ -215,7 +215,8 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
             registerUser();
         } else if (view == signIn) {
             goToLogin();
-        } else if (view == standardAvatar) {
+        }
+        if (view == standardAvatar) {
             chooseProfilePic();
             //When it's time to choose the avatar, we set the avatar also in the preview
         } else if (view == avatar1) {
