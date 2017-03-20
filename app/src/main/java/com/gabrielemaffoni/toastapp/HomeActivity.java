@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import com.gabrielemaffoni.toastapp.classes.FriendsAdapter;
 import com.gabrielemaffoni.toastapp.objects.Event;
 import com.gabrielemaffoni.toastapp.objects.Friend;
+import com.google.android.gms.awareness.fence.LocationFence;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -115,9 +117,27 @@ public class HomeActivity extends AppCompatActivity {
 
             //Find the path to the friends and events database
             friendsDatabase = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB).child(cUID);
-            eventsDatabase = FirebaseDatabase.getInstance().getReference().child(EVENTSDB).child(cUID);
 
-            checkIfEventAlreadyExist(eventsDatabase, savedInstanceState);
+            DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+            db.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    if (dataSnapshot.hasChild(EVENTSDB)) {
+                        eventsDatabase = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
+
+                        checkIfEventAlreadyExist(eventsDatabase, savedInstanceState);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+
+
 
             //We check on the database if there are new events
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -177,20 +197,23 @@ public class HomeActivity extends AppCompatActivity {
 
     private void checkIfEventAlreadyExist(final DatabaseReference eventsDatabase, final Bundle savedInstanceState) {
 
+
         eventsDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 //If there is a new event we call the method to download it and find out if it's still active
-                if (dataSnapshot.exists()) {
+                if (dataSnapshot.hasChild(cUID)) {
 
                     downloadAndShowEventData(eventsDatabase, savedInstanceState);
+
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                eventExists = findViewById(R.id.event_exists);
+                eventExists.setVisibility(View.GONE);
             }
         });
 
@@ -339,58 +362,39 @@ public class HomeActivity extends AppCompatActivity {
 
     private void downloadAndShowEventData(final DatabaseReference eventsDatabase, final Bundle savedInstanceState) {
 
-        //At first we ask the database for the data
-        Query eventToDownload = eventsDatabase.getRef();
+        Query evenToDownload = eventsDatabase.child(cUID).getRef();
 
-        //Then we add a listener to download them
-        eventToDownload.addChildEventListener(new ChildEventListener() {
+        evenToDownload.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                //We check if the event is still active in the database
 
-                //We convert the data into an map
-                HashMap<String, Object> data = (HashMap<String, Object>) dataSnapshot.child(EWHEN).child(ETIME).getValue();
-
-                //We find todays date
                 Calendar today = Calendar.getInstance();
-
-                //And tomorrow's date
-                Calendar tomorrow = today;
+                Calendar tomorrow = Calendar.getInstance();
                 tomorrow.add(Calendar.DAY_OF_MONTH, 1);
 
-                //We check the event's date
-                GregorianCalendar eventDate = new GregorianCalendar(
-                        Integer.valueOf(String.valueOf(data.get(EYEAR))),
-                        Integer.valueOf(String.valueOf(data.get(EMONTH))),
-                        Integer.valueOf(String.valueOf(data.get(EDATE)))
-                );
+                HashMap<String, Object> data = (HashMap<String, Object>) dataSnapshot.child(EWHEN).child(ETIME).getValue();
+                int eventDate = Integer.valueOf(String.valueOf(data.get(EDATE)));
+                int todayInt = today.get(Calendar.DAY_OF_MONTH);
+                int tomorrowInt = tomorrow.get(Calendar.DAY_OF_MONTH);
 
-                //If the event is today or tomorrow, we desplay the data
-                if (today.get(Calendar.DAY_OF_MONTH) == eventDate.get(Calendar.DAY_OF_MONTH) || tomorrow.get(Calendar.DAY_OF_MONTH) == eventDate.get(Calendar.DAY_OF_MONTH)) {
+                if (eventDate == todayInt || eventDate == tomorrowInt) {
                     showEventData(dataSnapshot, savedInstanceState);
                 }
-                //Otherwise we delete from the database the event
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                HashMap<String, Object> data = (HashMap<String, Object>) dataSnapshot.getValue();
-                Calendar today = Calendar.getInstance();
-                GregorianCalendar eventDate = new GregorianCalendar(
-                        Integer.valueOf(String.valueOf(data.get(EYEAR))),
-                        Integer.valueOf(String.valueOf(data.get(EMONTH))),
-                        Integer.valueOf(String.valueOf(data.get(EDATE)))
-                );
-                if (today.get(Calendar.DAY_OF_MONTH) == eventDate.get(Calendar.DAY_OF_MONTH) && today.get(Calendar.MONTH) == eventDate.get(Calendar.MONTH)) {
+                if (dataSnapshot != null) {
                     showEventData(dataSnapshot, savedInstanceState);
+                } else {
+                    eventExists.findViewById(R.id.event_exists);
+                    eventExists.setVisibility(View.GONE);
                 }
-
-
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                eventExists = findViewById(R.id.event_exists);
+                eventExists.findViewById(R.id.event_exists);
                 eventExists.setVisibility(View.GONE);
             }
 
@@ -401,13 +405,15 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                eventExists = findViewById(R.id.event_exists);
+
+                eventExists.findViewById(R.id.event_exists);
                 eventExists.setVisibility(View.GONE);
             }
         });
 
 
     }
+
 
     private void showEventData(DataSnapshot dataSnapshot, Bundle savedInstanceState) {
 
@@ -431,6 +437,7 @@ public class HomeActivity extends AppCompatActivity {
         String eventRUName = String.valueOf(receiverData.get(ERUNAME)); //gets the Name of the sender
         int eventRUProfPic = Integer.valueOf(String.valueOf(receiverData.get(ERUPRPIC))); //gets the avatar of the sender
         String eventRUSurname = String.valueOf(receiverData.get(ERUSURNAME)); //gets the surname of the sender
+
 
         //We take the time values
         HashMap<String, Object> dateData = (HashMap<String, Object>) dataSnapshot.child(EWHEN).child(ETIME).getValue();

@@ -405,7 +405,7 @@ public class CardPlaceAndDate extends Fragment implements AdapterView.OnItemSele
         try {
             db.child(currentUserId).child(event.getReceiver().getUserId()).setValue(event);
         } catch (DatabaseException e) {
-            //
+            //Do nothing
         }
 
         //now the opposite, add to the database of the one invited the opposite event, changing the data inside the event
@@ -449,7 +449,6 @@ public class CardPlaceAndDate extends Fragment implements AdapterView.OnItemSele
                 databaseToAddTheOppositeEvent.child(event.getReceiver().getUserId()).child(currentUserId).setValue(eventOpposite);
                 Toast.makeText(getContext().getApplicationContext(), "Event created", Toast.LENGTH_SHORT).show();
 
-                //sendNotification(eventOpposite, event);
                 getActivity().finish();
             }
 
