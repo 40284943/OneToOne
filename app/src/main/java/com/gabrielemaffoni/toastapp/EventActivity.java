@@ -32,7 +32,6 @@ import static com.gabrielemaffoni.toastapp.utils.Static.IS_PRESSED;
  */
 
 
-//TODO: Add the change of upperpart once clicked the type of event
 
 public class EventActivity extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener {
     private static final int NUM_PAGES = 2;

@@ -133,6 +133,7 @@ public class CardPlaceAndDate extends Fragment implements AdapterView.OnItemSele
         event.setWhen(dayChosen);
         setWhere();
 
+        //Shows the confirmation card onClick
         showPreconfirmationCard(okay, savedInstanceState);
 
         return rootView;
@@ -228,8 +229,12 @@ public class CardPlaceAndDate extends Fragment implements AdapterView.OnItemSele
 
 
         event.setWhen(todayCal);
+
+        //We show the possible timeslots from the moment the user access to the app
         setTimeFromNow(time, currentDay);
+
         selectedDay = "Today";
+
         ArrayAdapter<CharSequence> dayAdapter = ArrayAdapter.createFromResource(getContext().getApplicationContext(), R.array.day_dropdown, R.layout.simple_spinner_item);
         dayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         day.setAdapter(dayAdapter);
@@ -247,8 +252,10 @@ public class CardPlaceAndDate extends Fragment implements AdapterView.OnItemSele
 
         int now = calendar.get(Calendar.HOUR_OF_DAY);
 
+
         ArrayList<String> timeFromNow = new ArrayList<>();
 
+        //if the current time is later than 10PM, it doesn't give any timeslot.
         if (now < 22) {
 
             for (int i = now; i < 24; i++) {
@@ -256,6 +263,7 @@ public class CardPlaceAndDate extends Fragment implements AdapterView.OnItemSele
                 timeFromNow.add(i + ":" + TOTAL_HOUR);
             }
         } else {
+            //but it shows an alternative
             timeFromNow.add(getContext().getString(R.string.sorry_tomorrow));
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext().getApplicationContext(), R.layout.simple_spinner_item, timeFromNow);
@@ -267,6 +275,8 @@ public class CardPlaceAndDate extends Fragment implements AdapterView.OnItemSele
     }
 
     private void setTimeForTomorrow(Spinner timeList) {
+
+
         ArrayList<String> timeForTomorrow = new ArrayList<>();
 
         for (int i = 0; i < 24; i++) {
@@ -328,9 +338,9 @@ public class CardPlaceAndDate extends Fragment implements AdapterView.OnItemSele
         //Do nothing
     }
 
-    public void showPreconfirmationCard(FloatingActionButton button, final Bundle savedInstanceState) {
+    public void showPreconfirmationCard(FloatingActionButton okay, final Bundle savedInstanceState) {
         //if they click on the floating button
-        button.setOnClickListener(new View.OnClickListener() {
+        okay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 

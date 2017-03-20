@@ -99,7 +99,7 @@ public class Event {
      */
 
     public static String setTodayOrTomorrow(GregorianCalendar date) {
-        String finalDate = "";
+        String finalDate;
         Calendar today = Calendar.getInstance();
         GregorianCalendar todayCal = new GregorianCalendar(
                 today.get(Calendar.YEAR),

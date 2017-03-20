@@ -48,6 +48,7 @@ public class Friend extends User {
     /**
      * This method helps to convert to the right avatar what's written in the database.
      * In this way we are not going to have any problem in case of change of ID.
+     *
      * @param friendAvatarDB The number written in the database
      */
 

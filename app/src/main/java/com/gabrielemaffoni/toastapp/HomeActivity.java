@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,7 +20,6 @@ import android.widget.Toast;
 import com.gabrielemaffoni.toastapp.classes.FriendsAdapter;
 import com.gabrielemaffoni.toastapp.objects.Event;
 import com.gabrielemaffoni.toastapp.objects.Friend;
-import com.google.android.gms.awareness.fence.LocationFence;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -115,9 +113,6 @@ public class HomeActivity extends AppCompatActivity {
             //Save the current user ID
             cUID = firebaseAuth.getCurrentUser().getUid();
 
-            //Find the path to the friends and events database
-            friendsDatabase = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB).child(cUID);
-
             DatabaseReference db = FirebaseDatabase.getInstance().getReference();
 
             //Checking if events child exists
@@ -138,6 +133,9 @@ public class HomeActivity extends AppCompatActivity {
                 }
             });
 
+
+            //Find the path to the friends and events database
+            friendsDatabase = FirebaseDatabase.getInstance().getReference().child(FRIENDSDB).child(cUID);
 
 
 
@@ -224,13 +222,15 @@ public class HomeActivity extends AppCompatActivity {
     private void generateFriendsGrid(DatabaseReference friendsDatabase, final GridView grid) {
 
         friendsDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            //If something changes in the database (like we delete a friend or someone adds us)
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 //We clear the database
                 friendArrayList.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    //We download all the friends and add them to the List
+                    //We download all the friends again and add them to the List
                     Friend friend = postSnapshot.getValue(Friend.class);
                     friend.setUserId(postSnapshot.getKey());
                     friend.convertAvatar(friend.getUserProfilePic());
