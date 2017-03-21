@@ -1,13 +1,30 @@
 package com.gabrielemaffoni.toastapp.objects;
 
+
 import com.gabrielemaffoni.toastapp.R;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+
 
 import static com.gabrielemaffoni.toastapp.utils.Static.BEER;
 import static com.gabrielemaffoni.toastapp.utils.Static.COCKTAIL;
 import static com.gabrielemaffoni.toastapp.utils.Static.COFFEE;
+import static com.gabrielemaffoni.toastapp.utils.Static.EACTIVE;
+import static com.gabrielemaffoni.toastapp.utils.Static.EADDRESS;
+import static com.gabrielemaffoni.toastapp.utils.Static.EDATE;
+import static com.gabrielemaffoni.toastapp.utils.Static.EHOUR;
+import static com.gabrielemaffoni.toastapp.utils.Static.ELAT;
+import static com.gabrielemaffoni.toastapp.utils.Static.ELOCATION;
+import static com.gabrielemaffoni.toastapp.utils.Static.ELON;
+import static com.gabrielemaffoni.toastapp.utils.Static.EMINUTE;
+import static com.gabrielemaffoni.toastapp.utils.Static.EMONTH;
+import static com.gabrielemaffoni.toastapp.utils.Static.ERECEIVER;
+import static com.gabrielemaffoni.toastapp.utils.Static.ESENDERID;
+import static com.gabrielemaffoni.toastapp.utils.Static.ETYPE;
+import static com.gabrielemaffoni.toastapp.utils.Static.EWHEN;
+import static com.gabrielemaffoni.toastapp.utils.Static.EYEAR;
 import static com.gabrielemaffoni.toastapp.utils.Static.LUNCH;
 
 /**
@@ -28,6 +45,7 @@ public class Event {
     private double lat;
     private double lon;
     private String senderID;
+    private HashMap<String, Integer> time;
 
     /**
      * !IMPORTANT empty constructor
@@ -133,6 +151,7 @@ public class Event {
         this.when = when;
     }
 
+
     public int getActive() {
         return active;
     }
@@ -205,6 +224,29 @@ public class Event {
         newEvent.setActive(this.getActive());
         newEvent.setSenderID(this.getSenderID());
     }
+
+    public HashMap<String, Object> convertEventToHashmap(Friend friendWhoSearched, String currentUserId) {
+
+        HashMap<String, Object> eventConverted = new HashMap<>();
+        eventConverted.put(EACTIVE, this.getActive());
+        eventConverted.put(EADDRESS, this.getAddress());
+        eventConverted.put(ELAT, this.getLat());
+        eventConverted.put(ELOCATION, this.getLocation_name());
+        eventConverted.put(ELON, this.getLon());
+        eventConverted.put(ERECEIVER, friendWhoSearched);
+        eventConverted.put(ESENDERID, currentUserId);
+        eventConverted.put(ETYPE, this.getType());
+        HashMap<String, Integer> timeEvent = new HashMap<>();
+        timeEvent.put(EHOUR, this.getWhen().get(Calendar.HOUR_OF_DAY));
+        timeEvent.put(EDATE, this.getWhen().get(Calendar.DAY_OF_MONTH));
+        timeEvent.put(EMINUTE, this.getWhen().get(Calendar.MINUTE));
+        timeEvent.put(EYEAR, this.getWhen().get(Calendar.YEAR));
+        timeEvent.put(EMONTH, this.getWhen().get(Calendar.MONTH));
+        eventConverted.put(EWHEN, timeEvent);
+
+        return eventConverted;
+    }
+
 
     @Override
     public String toString() {

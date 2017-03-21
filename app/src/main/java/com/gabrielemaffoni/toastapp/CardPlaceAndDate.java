@@ -1,7 +1,10 @@
 package com.gabrielemaffoni.toastapp;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
@@ -34,15 +37,18 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
+
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,7 +60,21 @@ import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static com.gabrielemaffoni.toastapp.EventActivity.currentItem;
 import static com.gabrielemaffoni.toastapp.EventActivity.event;
+import static com.gabrielemaffoni.toastapp.utils.Static.EACTIVE;
+import static com.gabrielemaffoni.toastapp.utils.Static.EADDRESS;
+import static com.gabrielemaffoni.toastapp.utils.Static.EDATE;
+import static com.gabrielemaffoni.toastapp.utils.Static.EHOUR;
+import static com.gabrielemaffoni.toastapp.utils.Static.ELAT;
+import static com.gabrielemaffoni.toastapp.utils.Static.ELOCATION;
+import static com.gabrielemaffoni.toastapp.utils.Static.ELON;
+import static com.gabrielemaffoni.toastapp.utils.Static.EMINUTE;
+import static com.gabrielemaffoni.toastapp.utils.Static.EMONTH;
+import static com.gabrielemaffoni.toastapp.utils.Static.ERECEIVER;
+import static com.gabrielemaffoni.toastapp.utils.Static.ESENDERID;
+import static com.gabrielemaffoni.toastapp.utils.Static.ETYPE;
 import static com.gabrielemaffoni.toastapp.utils.Static.EVENTSDB;
+import static com.gabrielemaffoni.toastapp.utils.Static.EWHEN;
+import static com.gabrielemaffoni.toastapp.utils.Static.EYEAR;
 import static com.gabrielemaffoni.toastapp.utils.Static.IS_PRESSED;
 import static com.gabrielemaffoni.toastapp.utils.Static.MAYBE;
 import static com.gabrielemaffoni.toastapp.utils.Static.PLACE_AUTOCOMPLETE_REQUEST_CODE;
@@ -412,10 +432,18 @@ public class CardPlaceAndDate extends Fragment implements AdapterView.OnItemSele
     private void setDatabaseUser() {
 
         //add the event created to the database of the current user
-        try {
-            db.child(currentUserId).child(event.getReceiver().getUserId()).setValue(event);
-        } catch (DatabaseException e) {
-            //Do nothing
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            try {
+                db.child(currentUserId).child(event.getReceiver().getUserId()).setValue(event);
+            } catch (DatabaseException e) {
+                //Do nothing
+
+            }
+        } else {
+
+            HashMap<String, Object> eventConverted = new HashMap<>();
+            eventConverted.putAll(event.convertEventToHashmap(event.getReceiver(), currentUserId));
+            db.child(currentUserId).child(event.getReceiver().getUserId()).setValue(eventConverted);
         }
 
         //now the opposite, add to the database of the one invited the opposite event, changing the data inside the event
@@ -446,17 +474,27 @@ public class CardPlaceAndDate extends Fragment implements AdapterView.OnItemSele
                         finalSearcherSurname,
                         finalProfilePic
                 );
-
-                //therefore we create a new event that's exactly like the one we already have
-                Event eventOpposite = new Event();
-                event.copyToEventExceptFriend(eventOpposite);
-
-                //but we change the receiver
-                eventOpposite.setReceiver(friendWhoSearched);
-
-                //Then we add everything to the database
+                //We call the database
                 DatabaseReference databaseToAddTheOppositeEvent = FirebaseDatabase.getInstance().getReference().child(EVENTSDB);
-                databaseToAddTheOppositeEvent.child(event.getReceiver().getUserId()).child(currentUserId).setValue(eventOpposite);
+                Event eventOpposite = new Event();
+
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+
+                    //therefore we create a new event that's exactly like the one we already have
+                    event.copyToEventExceptFriend(eventOpposite);
+                    //but we change the receiver
+                    eventOpposite.setReceiver(friendWhoSearched);
+
+                    //Then we add everything to the database
+                    databaseToAddTheOppositeEvent.child(event.getReceiver().getUserId()).child(currentUserId).setValue(eventOpposite);
+
+                } else {
+
+                    HashMap<String, Object> eventConverted = new HashMap<>();
+                    eventConverted.putAll(event.convertEventToHashmap(friendWhoSearched, currentUserId));
+                    databaseToAddTheOppositeEvent.child(event.getReceiver().getUserId()).child(currentUserId).setValue(eventConverted);
+                }
+
                 Toast.makeText(getContext().getApplicationContext(), "Event created", Toast.LENGTH_SHORT).show();
 
                 getActivity().finish();

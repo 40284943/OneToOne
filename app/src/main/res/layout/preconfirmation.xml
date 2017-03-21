@@ -35,7 +35,7 @@
                     android:layout_height="60dp"
                     android:layout_gravity="center"
                     android:contentDescription="@string/activity_button_description"
-                    android:src="@mipmap/ic_launcher" />
+                    android:src="@drawable/ic_launcher" />
 
                 <TextView
                     android:id="@+id/with"
@@ -50,7 +50,7 @@
                     android:layout_height="60dp"
                     android:layout_gravity="center"
                     android:contentDescription="@string/profile_pic_description_chosen"
-                    android:src="@mipmap/ic_launcher" />
+                    android:src="@drawable/ic_launcher" />
             </LinearLayout>
 
             <android.support.v7.widget.CardView

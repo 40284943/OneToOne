@@ -1,12 +1,12 @@
 package com.gabrielemaffoni.toastapp;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -375,8 +375,21 @@ public class HomeActivity extends AppCompatActivity {
                 Calendar today = Calendar.getInstance();
                 Calendar tomorrow = Calendar.getInstance();
                 tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+                HashMap<String, Object> data;
 
-                HashMap<String, Object> data = (HashMap<String, Object>) dataSnapshot.child(EWHEN).child(ETIME).getValue();
+                /*
+                !IMPORTANT
+                This if is important for the compatibility between the different versions of android:
+                in the case of Android 25 we don't upload GregorianCalendar, but and HashMap of data.
+                In the case of Android 22 - 23 we upload a GregorianCalendar.
+                Therefore when we download we have to check which type of data has been uploaded.
+                 */
+                if (dataSnapshot.child(EWHEN).child(ETIME).exists()) {
+                    data = (HashMap<String, Object>) dataSnapshot.child(EWHEN).child(ETIME).getValue();
+                } else {
+                    data = (HashMap<String, Object>) dataSnapshot.child(EWHEN).getValue();
+                }
+
                 int eventDate = Integer.valueOf(String.valueOf(data.get(EDATE)));
                 int todayInt = today.get(Calendar.DAY_OF_MONTH);
                 int tomorrowInt = tomorrow.get(Calendar.DAY_OF_MONTH);
@@ -448,10 +461,16 @@ public class HomeActivity extends AppCompatActivity {
         String eventRUName = String.valueOf(receiverData.get(ERUNAME)); //gets the Name of the sender
         int eventRUProfPic = Integer.valueOf(String.valueOf(receiverData.get(ERUPRPIC))); //gets the avatar of the sender
         String eventRUSurname = String.valueOf(receiverData.get(ERUSURNAME)); //gets the surname of the sender
-
-
+        HashMap<String, Object> dateData;
         //We take the time values
-        HashMap<String, Object> dateData = (HashMap<String, Object>) dataSnapshot.child(EWHEN).child(ETIME).getValue();
+
+        //To make sure that our compatibility works, we add a passage to verify if the event has been created from version 25 => we check if in the database there is an object = to
+        if (dataSnapshot.child(EWHEN).child(ETIME).exists()) {
+            dateData = (HashMap<String, Object>) dataSnapshot.child(EWHEN).child(ETIME).getValue();
+        } else {
+            dateData = (HashMap<String, Object>) dataSnapshot.child(EWHEN).getValue();
+        }
+
 
         //We store them into variables
         int eventHour = Integer.valueOf(String.valueOf(dateData.get(EHOUR)));
