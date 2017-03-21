@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
-import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
@@ -48,7 +47,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
-import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,21 +58,7 @@ import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static com.gabrielemaffoni.toastapp.EventActivity.currentItem;
 import static com.gabrielemaffoni.toastapp.EventActivity.event;
-import static com.gabrielemaffoni.toastapp.utils.Static.EACTIVE;
-import static com.gabrielemaffoni.toastapp.utils.Static.EADDRESS;
-import static com.gabrielemaffoni.toastapp.utils.Static.EDATE;
-import static com.gabrielemaffoni.toastapp.utils.Static.EHOUR;
-import static com.gabrielemaffoni.toastapp.utils.Static.ELAT;
-import static com.gabrielemaffoni.toastapp.utils.Static.ELOCATION;
-import static com.gabrielemaffoni.toastapp.utils.Static.ELON;
-import static com.gabrielemaffoni.toastapp.utils.Static.EMINUTE;
-import static com.gabrielemaffoni.toastapp.utils.Static.EMONTH;
-import static com.gabrielemaffoni.toastapp.utils.Static.ERECEIVER;
-import static com.gabrielemaffoni.toastapp.utils.Static.ESENDERID;
-import static com.gabrielemaffoni.toastapp.utils.Static.ETYPE;
 import static com.gabrielemaffoni.toastapp.utils.Static.EVENTSDB;
-import static com.gabrielemaffoni.toastapp.utils.Static.EWHEN;
-import static com.gabrielemaffoni.toastapp.utils.Static.EYEAR;
 import static com.gabrielemaffoni.toastapp.utils.Static.IS_PRESSED;
 import static com.gabrielemaffoni.toastapp.utils.Static.MAYBE;
 import static com.gabrielemaffoni.toastapp.utils.Static.PLACE_AUTOCOMPLETE_REQUEST_CODE;
@@ -442,7 +426,7 @@ public class CardPlaceAndDate extends Fragment implements AdapterView.OnItemSele
         } else {
 
             HashMap<String, Object> eventConverted = new HashMap<>();
-            eventConverted.putAll(event.convertEventToHashmap(event.getReceiver(), currentUserId));
+            eventConverted.putAll(event.convertEventToHashMap(event.getReceiver(), currentUserId));
             db.child(currentUserId).child(event.getReceiver().getUserId()).setValue(eventConverted);
         }
 
@@ -491,7 +475,7 @@ public class CardPlaceAndDate extends Fragment implements AdapterView.OnItemSele
                 } else {
 
                     HashMap<String, Object> eventConverted = new HashMap<>();
-                    eventConverted.putAll(event.convertEventToHashmap(friendWhoSearched, currentUserId));
+                    eventConverted.putAll(event.convertEventToHashMap(friendWhoSearched, currentUserId));
                     databaseToAddTheOppositeEvent.child(event.getReceiver().getUserId()).child(currentUserId).setValue(eventConverted);
                 }
 

@@ -225,7 +225,7 @@ public class Event {
         newEvent.setSenderID(this.getSenderID());
     }
 
-    public HashMap<String, Object> convertEventToHashmap(Friend friendWhoSearched, String currentUserId) {
+    public HashMap<String, Object> convertEventToHashMap(Friend friendWhoSearched, String currentUserId) {
 
         HashMap<String, Object> eventConverted = new HashMap<>();
         eventConverted.put(EACTIVE, this.getActive());
